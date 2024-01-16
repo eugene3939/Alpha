@@ -3,13 +3,13 @@ package com.example.alpha.ui.home
 import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -45,11 +45,6 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-
         // 初始化商品資料庫
         val dbHelper = UserDBHelper(requireContext())
         dbrw = dbHelper.writableDatabase
@@ -80,10 +75,51 @@ class HomeFragment : Fragment() {
             }
         }
 
+        //搜尋特定的rowId (先查找row，有需要再接續更新
+        binding.btnSearch.setOnClickListener {
+            val searchItem = binding.edtSearchRow.text //搜尋項目，這邊先使用row
+            if(searchItem!=null) { //輸入非空
+                selectionRowData("uName",searchItem,tablesArray[nowTableId])
+            }
+        }
+
         //更新GridView顯示所在資料庫內容
         updateGridView(nowTableId,null)
 
         return root
+    }
+
+    @SuppressLint("Range")
+    private fun selectionRowData(columnName: String, rowItem: Editable, table: String) {
+        // 執行查詢
+        val query = "SELECT * FROM $table WHERE $columnName LIKE '%$rowItem%';"
+
+        Log.d("進入判斷句1", query)
+
+        val cursor = dbrw.rawQuery(query, null)
+
+        // 檢查是否有查詢結果
+        if (cursor != null && cursor.moveToFirst()) {
+            Log.d("進入判斷句", query)
+            data.clear() // 清空先前的資料
+
+            val columnNames = cursor.columnNames.toList()
+
+            do {
+                for (column in columnNames) {
+                    val columnIndex = cursor.getColumnIndex(column) //欄位名稱
+                    val value = cursor.getString(columnIndex) //項目
+                    data.add(value)
+                }
+            } while (cursor.moveToNext())
+
+            cursor.close()
+        }
+
+
+            //更新gridView
+        val rowNameAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1,data)
+        binding.grTableData.adapter = rowNameAdapter
     }
 
     //顯示目前columns名稱
@@ -141,7 +177,6 @@ class HomeFragment : Fragment() {
         }
 
         updateColumnNameShow()   //更新rowName
-        //edtAutoFilling(nowColums)  //editText自動填詞
     }
 
     //依照欄位數、欄位名稱搜尋資料庫Select SQLite

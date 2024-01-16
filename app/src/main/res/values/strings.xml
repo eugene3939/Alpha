@@ -8,6 +8,8 @@
     <string name="login_pas_text">密碼</string>
     <string name="login_pas_hint">密碼</string>
     <string name="txt_login">登入</string>
+    <string name="txt_sent">確定</string>
+    <string name="txt_table">輸入id</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>
