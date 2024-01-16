@@ -30,20 +30,24 @@
             android:layout_weight="0.25"
             android:text="@string/txt_sent"/>
 
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_clear"/>
+
     </LinearLayout>
 
+    <!--商品分類-->
     <Spinner
-        android:id="@+id/sp_tableName"
+        android:id="@+id/sp_productType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <GridView
-        android:id="@+id/gr_columnName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+    <!--欄位內容-->
     <GridView
         android:id="@+id/gr_tableData"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>

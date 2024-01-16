@@ -15,6 +15,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         db.execSQL("CREATE TABLE IF NOT EXISTS ProductTable (" //建立ProductTable
                 + "pId INTEGER PRIMARY KEY AUTOINCREMENT,"  //商品id
                 + "pName TEXT,"     //商品名稱
+                + "pType TEXT,"      //商品分類
                 + "pPrice INTEGER," //商品價錢
                 + "pNumber INTEGER," //商品數量
                 + "pPhoto TEXT);")  //商品圖片

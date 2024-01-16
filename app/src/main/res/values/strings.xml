@@ -9,7 +9,9 @@
     <string name="login_pas_hint">密碼</string>
     <string name="txt_login">登入</string>
     <string name="txt_sent">確定</string>
-    <string name="txt_table">輸入id</string>
+    <string name="txt_table">輸入商品名稱或編號</string>
+    <string name="txt_clear">清除</string>
+    <string name="txt_default">預設</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>
@@ -29,6 +31,7 @@
     <string-array name="ProductItems">
         <item>pId</item>
         <item>pName</item>
+        <item>pType</item>
         <item>pPrice</item>
         <item>pNumber</item>
         <item>pPhoto</item>
@@ -39,6 +42,14 @@
         <item>tId</item>
         <item>tDate</item>
         <item>tDescription</item>
+    </string-array>
+
+    <!--商品分類-->
+    <string-array name="productType">
+        <item>fruit</item>
+        <item>food</item>
+        <item>other</item>
+        <item>all</item>
     </string-array>
 
 </resources>
