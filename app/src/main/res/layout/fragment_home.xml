@@ -26,4 +26,14 @@
         android:id="@+id/sp_tableName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <GridView
+        android:id="@+id/gr_columnName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <GridView
+        android:id="@+id/gr_tableData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

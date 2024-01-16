@@ -14,4 +14,29 @@
         <item>ProductTable</item>
         <item>TransactionTable</item>
     </string-array>
+
+    <!--UserDB欄位-->
+    <string-array name="UserItems">
+        <item>uId</item>
+        <item>uName</item>
+        <item>account</item>
+        <item>password</item>
+    </string-array>
+
+    <!--ProductDB欄位-->
+    <string-array name="ProductItems">
+        <item>pId</item>
+        <item>pName</item>
+        <item>pPrice</item>
+        <item>pNumber</item>
+        <item>pPhoto</item>
+    </string-array>
+
+    <!--ProductDB欄位-->
+    <string-array name="TransactionItems">
+        <item>tId</item>
+        <item>tDate</item>
+        <item>tDescription</item>
+    </string-array>
+
 </resources>
