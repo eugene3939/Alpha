@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.alpha.databinding.FragmentHomeBinding
+import com.example.alpha.R
 
 class HomeFragment : Fragment() {
 
@@ -32,6 +33,9 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        val tableNames = resources.getStringArray(R.array.tableNames)
+
         return root
     }
 

@@ -8,4 +8,10 @@
     <string name="login_pas_text">密碼</string>
     <string name="login_pas_hint">密碼</string>
     <string name="txt_login">登入</string>
+
+    <string-array name="tableNames">
+        <item>UserTable</item>
+        <item>ProductTable</item>
+        <item>TransactionTable</item>
+    </string-array>
 </resources>
