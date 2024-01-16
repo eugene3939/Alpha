@@ -70,9 +70,9 @@ class HomeFragment : Fragment() {
 
         // 創建一個包含 ProductItem 物件的測試集合
         val productList = listOf(
-            ProductItem(R.drawable.ic_hello, "Product 1", "Type 1", 10, 29.99),
-            ProductItem(R.drawable.ic_hello, "Product 2", "Type 2", 20, 39.99),
-            ProductItem(R.drawable.ic_hello, "Product 3", "Type 3", 15, 49.99)
+            ProductItem(1,R.drawable.ic_hello, "Product 1", "Type 1", 10, 29.99),
+            ProductItem(2,R.drawable.ic_hello, "Product 2", "Type 2", 20, 39.99),
+            ProductItem(3,R.drawable.ic_hello, "Product 3", "Type 3", 15, 49.99)
         )
 
         // 讀取GridView的Adapter
