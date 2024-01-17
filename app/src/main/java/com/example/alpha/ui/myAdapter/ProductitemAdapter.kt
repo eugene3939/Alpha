@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.alpha.R
 import com.example.alpha.ui.myObject.ProductItem
 
-class ProductitemAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
+class ProductitemAdapter(private val dataList: List<ProductItem>, private val selectedPositions: Set<Int>) : BaseAdapter() {
     override fun getCount(): Int {
         return dataList.size
     }
@@ -26,6 +26,16 @@ class ProductitemAdapter(private val dataList: List<ProductItem>) : BaseAdapter(
         val viewHolder = ViewHolder(view)
         val data = getItem(position) as ProductItem
         viewHolder.bind(data)
+
+        // 檢查該位置是否被選擇，並設置相應的背景顏色
+        if (selectedPositions.contains(position)) {
+            // 被選擇時的背景顏色
+            view.setBackgroundResource(R.color.purple_200)
+        } else {
+            // 正常狀態的背景顏色
+            view.setBackgroundResource(R.color.white)
+        }
+
         return view
     }
 

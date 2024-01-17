@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.alpha.databinding.FragmentHomeBinding
@@ -26,6 +27,12 @@ class HomeFragment : Fragment() {
 
     //product Table的項目
     private lateinit var productList: List<ProductItem>
+
+    //儲存選擇的productItem位置
+    private var selectedPositions = mutableSetOf<Int>()
+
+    // 新增一個變數來儲存篩選結果
+    private var filteredProductList: List<ProductItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,10 +79,29 @@ class HomeFragment : Fragment() {
 //            ProductItem(3,R.drawable.ic_hello, "牛肉堡", "漢堡", 100, 150)
 //        )
 
+        //從ProductTable更新productList
         getProductTable()
 
+        //grTableData點擊事件
+        binding.grTableData.setOnItemClickListener { parent, view, position, id ->
+            //顯示點擊項目名稱
+            val selectedProduct = productList[position]
+            val productName = selectedProduct.pName
+            Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
+
+            // 切換選擇狀態
+            if (selectedPositions.contains(position)) {
+                selectedPositions.remove(position)
+            } else {
+                selectedPositions.add(position)
+            }
+
+            // 更新 GridView 的外觀
+            updateGridViewAppearance()
+        }
+
         // 讀取GridView的Adapter
-        val adapter = ProductitemAdapter(productList)
+        val adapter = ProductitemAdapter(productList, selectedPositions)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns=2
 
@@ -85,10 +111,16 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    // 更新 GridView 的外觀
+    private fun updateGridViewAppearance() {
+        val adapter = ProductitemAdapter(filteredProductList, selectedPositions)
+        binding.grTableData.adapter = adapter
+    }
+
     //查詢特定column
     private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
         // 如果 columnName 和 selectedItem 不為空，則篩選商品列表
-        val filteredList = if (columnName != null && selectedItem != null) {
+        filteredProductList  = if (columnName != null && selectedItem != null) {
             val selectedValue = selectedItem.toString()
             productList.filter { getColumnValue(it, columnName) == selectedValue }
         } else {
@@ -97,7 +129,7 @@ class HomeFragment : Fragment() {
         }
 
         // 讀取 GridView 的 Adapter
-        val adapter = ProductitemAdapter(filteredList)
+        val adapter = ProductitemAdapter(filteredProductList , selectedPositions)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns = 2
     }
