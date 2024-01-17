@@ -113,8 +113,20 @@ class HomeFragment : Fragment() {
 
         //清除全選項目按鈕
         binding.btnClear.setOnClickListener {
-            selectedPositions.clear()
-            updateGridViewAppearance()
+            //清空搜尋結果
+            filteredProductList = productList
+            updateGridView(filteredProductList,null,null)
+            //清空點擊項目
+//            selectedPositions.clear()
+//            updateGridViewAppearance()
+        }
+
+        //單一欄位查詢
+        binding.btnSearch.setOnClickListener { //先搜尋品名為主(數值型依狀況添加)
+            val searchText = binding.edtSearchRow.text.toString()
+            if (searchText!=""){
+                updateGridView(productList,"PName",searchText)
+            }
         }
 
         return root
@@ -134,7 +146,7 @@ class HomeFragment : Fragment() {
             //productList.filter { getColumnValue(it, columnName) == selectedValue }    //從list撈篩選
 
             val dbHelper = ProductDBHelper(requireContext())
-            dbHelper.getProductsByCondition("pType",selectedValue)   //從table篩選
+            dbHelper.getProductsByCondition(columnName,selectedValue)   //從table篩選
         } else {
             // 如果 columnName 或 selectedItem 為空，或 selectedItem 不是預期的型態，保持原始列表
             productList
@@ -144,15 +156,6 @@ class HomeFragment : Fragment() {
         val adapter = ProductitemAdapter(filteredProductList , selectedPositions)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns = 2
-    }
-
-    //取得欄位
-    private fun getColumnValue(productItem: ProductItem, columnName: String): String {
-        return when (columnName) {
-            "pType" -> productItem.pType
-            // 如果有其他欄位，可以在這裡添加對應的邏輯
-            else -> throw IllegalArgumentException("Unsupported column name: $columnName")
-        }
     }
 
     //取得product table
