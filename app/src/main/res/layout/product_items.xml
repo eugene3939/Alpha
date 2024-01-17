@@ -35,6 +35,14 @@
         android:text="@string/txt_default"
         android:textSize="14sp" />
 
+    <!-- 商品條碼 -->
+    <TextView
+        android:id="@+id/txt_productBarcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_default"
+        android:textSize="14sp"/>
+
     <!-- 商品價格 -->
     <TextView
         android:id="@+id/txt_productPrice"

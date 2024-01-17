@@ -43,6 +43,7 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val se
         private val productImg: ImageView = itemView.findViewById(R.id.img_productItem)
         private val productName: TextView = itemView.findViewById(R.id.txt_productName)
         private val productType: TextView = itemView.findViewById(R.id.txt_productType)
+        private val productBarcode: TextView = itemView.findViewById(R.id.txt_productBarcode)
         private val productPrice: TextView = itemView.findViewById(R.id.txt_productPrice)
         private val productNumber: TextView = itemView.findViewById(R.id.txt_productNumber)
 
@@ -54,6 +55,7 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val se
 
             productName.text = product.pName
             productType.text = product.pType
+            productBarcode.text = product.pBarcode
             productPrice.text = product.pPrice.toString()
             productNumber.text = product.pNumber.toString()
         }

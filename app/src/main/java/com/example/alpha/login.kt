@@ -97,9 +97,9 @@ class login : AppCompatActivity() {
     private fun createProductDB() {
         val dbHelper = ProductDBHelper(this)
         val defaultProductData = listOf(
-            "INSERT INTO ProductTable(pName, pType, pPrice, pNumber,pPhoto) VALUES('Apple', 'fruit', 50, 100, 0);",
-            "INSERT INTO ProductTable(pName, pType, pPrice, pNumber,pPhoto) VALUES('Pineapple', 'food', 100, 80, 0);",
-            "INSERT INTO ProductTable(pName, pType, pPrice, pNumber,pPhoto) VALUES('Snapple', 'other', 200, 60, 0);"
+            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Apple', 'fruit','SBC', 50, 100, 0);",
+            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Pineapple', 'food','123', 100, 80, 0);",
+            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Snapple', 'other','A12', 200, 60, 0);"
         )
         createDatabase(dbHelper, "ProductTable", defaultProductData)
     }

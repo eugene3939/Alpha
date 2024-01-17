@@ -108,6 +108,12 @@ class HomeFragment : Fragment() {
         //更新GridView顯示所在資料庫內容
         updateGridView(productList,null,null)
 
+        //清除全選項目
+        binding.btnClear.setOnClickListener {
+            selectedPositions.clear()
+            updateGridViewAppearance()
+        }
+
         return root
     }
 

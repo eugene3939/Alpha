@@ -19,6 +19,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 + "pId INTEGER PRIMARY KEY AUTOINCREMENT,"  //商品id
                 + "pName TEXT,"     //商品名稱
                 + "pType TEXT,"      //商品分類
+                + "pBarcode TEXT,"       //商品條碼
                 + "pPrice INTEGER," //商品價錢
                 + "pNumber INTEGER," //商品數量
                 + "pPhoto TEXT);")  //商品圖片
@@ -49,10 +50,11 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 }
                 val name = cursor.getString(cursor.getColumnIndex("pName"))
                 val category = cursor.getString(cursor.getColumnIndex("pType"))
+                val pBarcode = cursor.getString(cursor.getColumnIndex("pBarcode"))
                 val price = cursor.getInt(cursor.getColumnIndex("pPrice"))
                 val quantity = cursor.getInt(cursor.getColumnIndex("pNumber"))
 
-                val productItem = ProductItem(id, imageResId, name, category, price, quantity)
+                val productItem = ProductItem(id, imageResId, name, category,pBarcode, price, quantity)
                 productList.add(productItem)
             } while (cursor.moveToNext())
         }
