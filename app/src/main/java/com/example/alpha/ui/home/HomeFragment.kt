@@ -1,6 +1,7 @@
 package com.example.alpha.ui.home
 
 import ProductitemAdapter
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -101,34 +103,32 @@ class HomeFragment : Fragment() {
 
         //grTableData點擊事件
         binding.grTableData.setOnItemClickListener { parent, view, position, id ->
-            //顯示點擊項目名稱
-            val selectedProduct = productList[position]
+            val selectedProduct = filteredProductList[position]
             val productName = selectedProduct.pName
             Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
 
-            // 切換選擇狀態(是否放入購物車)
             if (selectedPositions.contains(position)) {
                 // 產品從購物車中移除
                 shoppingCart.removeProduct(selectedProduct)
                 selectedPositions.remove(position)
             } else {
-                selectedPositions.add(position)
-                // 產品加入購物車
-                shoppingCart.addProduct(selectedProduct)
+                // 提示用戶輸入數量
+                showQuantityInputDialog { quantity ->
+                    if (quantity > 0) {
+                        // 用戶確認數量後，將商品及數量添加到購物車
+                        shoppingCart.addProduct(selectedProduct, quantity)
+                        selectedPositions.add(position)
+                    }
+                    // 更新 GridView 的外觀和購物車內容
+                    updateGridViewAppearance()
+                }
             }
-
-            // 更新 GridView 的外觀
-            updateGridViewAppearance()
-
-            //更新購物車內容
-
-
         }
 
         // 讀取GridView的Adapter
         val adapter = ProductitemAdapter(productList, selectedPositions)
         binding.grTableData.adapter = adapter
-        binding.grTableData.numColumns=2
+        binding.grTableData.numColumns=productList.size
 
         //更新GridView顯示所在資料庫內容
         updateGridView(productList,null,null)
@@ -153,6 +153,31 @@ class HomeFragment : Fragment() {
         }
 
         return root
+    }
+
+    //數量選擇
+    private fun showQuantityInputDialog(callback: (Int) -> Unit) {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = LayoutInflater.from(requireContext())
+        val dialogView = inflater.inflate(R.layout.checknumber, null)
+
+        builder.setView(dialogView)
+        builder.setTitle("輸入數量")
+
+        val quantityInput = dialogView.findViewById<EditText>(R.id.edt_click_num)
+
+        builder.setPositiveButton("確定") { _, _ ->
+            // 用戶點擊確定，將數量轉換為整數並調用回調函數
+            val quantity = quantityInput.text.toString().toIntOrNull() ?: 0
+            callback.invoke(quantity)
+        }
+
+        builder.setNegativeButton("取消") { _, _ ->
+            // 用戶點擊取消，回調函數中的數量為零
+            callback.invoke(0)
+        }
+
+        builder.show()
     }
 
     // 更新 GridView 的外觀
@@ -202,10 +227,10 @@ class HomeFragment : Fragment() {
         productList = databaseHelper.getAllProducts()   //取得product table items
 
         //取得資料庫的物件到productList
-        for (productItem in productList) {
-            // 在這裡使用 productItem，例如顯示它或進行其他處理
-            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
-        }
+//        for (productItem in productList) {
+//            // 在這裡使用 productItem，例如顯示它或進行其他處理
+//            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
+//        }
 
         databaseHelper.close()
     }

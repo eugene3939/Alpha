@@ -12,6 +12,8 @@
     <string name="txt_table">輸入商品名稱</string>
     <string name="txt_clear">清除</string>
     <string name="txt_default">預設</string>
+    <string name="number">1</string>
+    <string name="defult_quantity">1</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>

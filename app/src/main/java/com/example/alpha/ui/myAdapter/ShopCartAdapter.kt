@@ -1,5 +1,6 @@
 package com.example.alpha.ui.myAdapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,9 +46,14 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
     }
 
     class ViewHolder(itemView: View) {
-        private val shopCartName: TextView = itemView.findViewById(R.id.bxt_buyChart)
+        //請見buyChart.xml
+        private val shopCartName: TextView = itemView.findViewById(R.id.txt_buyChart)
+        private val shopCartNumber: TextView = itemView.findViewById(R.id.txt_buyNumber)
+
+        @SuppressLint("SetTextI18n")
         fun bind(shop: ProductItem) {
             shopCartName.text = shop.pName
+            shopCartNumber.text = "${shop.selectedQuantity}個"
         }
     }
 }

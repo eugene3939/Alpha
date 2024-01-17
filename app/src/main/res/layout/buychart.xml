@@ -6,11 +6,22 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/bxt_buyChart"
+        android:id="@+id/txt_buyChart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold"
+        android:textColor="@color/darkBlue"
         android:text="@string/txt_default"/>
+
+    <TextView
+        android:layout_marginStart="60dp"
+        android:id="@+id/txt_buyNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/number"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@color/darkBlue"/>
 
 </LinearLayout>
