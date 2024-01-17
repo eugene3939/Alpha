@@ -66,13 +66,14 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         return productList
     }
 
-    // 根據商品分類查詢
+    // 根據商品查詢
     @SuppressLint("Range")
-    fun getProductsByType(productType: String): List<ProductItem> {
+    fun getProductsByCondition(columnName: String, columnValue: String): List<ProductItem> {
         val productList = mutableListOf<ProductItem>()
         val db = readableDatabase
 
-        val cursor = db.rawQuery("SELECT * FROM ProductTable WHERE pType = ?", arrayOf(productType))
+        val query = "SELECT * FROM ProductTable WHERE $columnName = ?"
+        val cursor = db.rawQuery(query, arrayOf(columnValue))
 
         if (cursor.moveToFirst()) {
             do {
@@ -88,7 +89,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 val price = cursor.getInt(cursor.getColumnIndex("pPrice"))
                 val quantity = cursor.getInt(cursor.getColumnIndex("pNumber"))
 
-                val productItem = ProductItem(id, imageResId, name, category,pBarcode, price, quantity)
+                val productItem = ProductItem(id, imageResId, name, category, pBarcode, price, quantity)
                 productList.add(productItem)
             } while (cursor.moveToNext())
         }

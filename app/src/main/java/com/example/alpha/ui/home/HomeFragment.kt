@@ -134,7 +134,7 @@ class HomeFragment : Fragment() {
             //productList.filter { getColumnValue(it, columnName) == selectedValue }    //從list撈篩選
 
             val dbHelper = ProductDBHelper(requireContext())
-            dbHelper.getProductsByType(selectedValue)   //從table篩選
+            dbHelper.getProductsByCondition("pType",selectedValue)   //從table篩選
         } else {
             // 如果 columnName 或 selectedItem 為空，或 selectedItem 不是預期的型態，保持原始列表
             productList
