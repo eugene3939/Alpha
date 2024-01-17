@@ -24,11 +24,8 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    //product容器
-    private lateinit var dbrw: SQLiteDatabase
-
-    // 在類別內部宣告一個空的List<String>用來存放欄位名稱
-    private val data: MutableList<String> = mutableListOf()
+    //product Table的項目
+    private lateinit var productList: List<ProductItem>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,10 +37,6 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        // 初始化商品資料庫
-        val dbHelper = ProductDBHelper(requireContext())
-        dbrw = dbHelper.writableDatabase
 
         //下拉式選單顯示全部的product種類
         val productTypes = resources.getStringArray(R.array.productType)  //全部的商品種類
@@ -58,7 +51,11 @@ class HomeFragment : Fragment() {
 
                 val selectedItem = parent?.getItemAtPosition(position)    //取得選擇的資料
                 //更新GridView顯示所在資料庫內容
-                //updateGridView("ProductTable",selectedItem)
+                if (selectedItem=="all"){   //查找所有資料
+                    updateGridView(productList,null,null)
+                }else{
+                    updateGridView(productList,"pType",selectedItem)
+                }
 
                 Log.d("目前所在的Table索引是", "索引: $selectedItem")
             }
@@ -75,18 +72,7 @@ class HomeFragment : Fragment() {
 //            ProductItem(3,R.drawable.ic_hello, "牛肉堡", "漢堡", 100, 150)
 //        )
 
-        val databaseHelper = ProductDBHelper(requireContext())  //product Table Helper
-        val productList = databaseHelper.getAllProducts()   //取得product table items
-
-        Log.d("現在取得的資料有", "789")
-
-
-        for (productItem in productList) {
-            // 在這裡使用 productItem，例如顯示它或進行其他處理
-            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
-        }
-
-        databaseHelper.close()
+        getProductTable()
 
         // 讀取GridView的Adapter
         val adapter = ProductitemAdapter(productList)
@@ -94,14 +80,53 @@ class HomeFragment : Fragment() {
         binding.grTableData.numColumns=2
 
         //更新GridView顯示所在資料庫內容
-        //updateProductShow("ProductTable","all")
+        updateGridView(productList,null,null)
 
         return root
+    }
+
+    //查詢特定column
+    private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
+        // 如果 columnName 和 selectedItem 不為空，則篩選商品列表
+        val filteredList = if (columnName != null && selectedItem != null) {
+            val selectedValue = selectedItem.toString()
+            productList.filter { getColumnValue(it, columnName) == selectedValue }
+        } else {
+            // 如果 columnName 或 selectedItem 為空，或 selectedItem 不是預期的型態，保持原始列表
+            productList
+        }
+
+        // 讀取 GridView 的 Adapter
+        val adapter = ProductitemAdapter(filteredList)
+        binding.grTableData.adapter = adapter
+        binding.grTableData.numColumns = 2
+    }
+
+    //取得欄位
+    private fun getColumnValue(productItem: ProductItem, columnName: String): String {
+        return when (columnName) {
+            "pType" -> productItem.pType
+            // 如果有其他欄位，可以在這裡添加對應的邏輯
+            else -> throw IllegalArgumentException("Unsupported column name: $columnName")
+        }
+    }
+
+    //取得product table
+    private fun getProductTable() {
+        val databaseHelper = ProductDBHelper(requireContext())  //product Table Helper
+        productList = databaseHelper.getAllProducts()   //取得product table items
+
+        //取得資料庫的物件到productList
+        for (productItem in productList) {
+            // 在這裡使用 productItem，例如顯示它或進行其他處理
+            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
+        }
+
+        databaseHelper.close()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        dbrw.close()    //關閉table容器
     }
 }
