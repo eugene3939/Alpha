@@ -68,12 +68,25 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // 創建一個包含 ProductItem 物件的測試集合
-        val productList = listOf(
-            ProductItem(1,R.drawable.ic_hello, "Product 1", "Type 1", 10, 29.99),
-            ProductItem(2,R.drawable.ic_hello, "Product 2", "Type 2", 20, 39.99),
-            ProductItem(3,R.drawable.ic_hello, "Product 3", "Type 3", 15, 49.99)
-        )
+//        // 創建一個包含 ProductItem 物件的測試集合
+//        val productList = listOf(
+//            ProductItem(1,R.drawable.ic_hello, "可樂", "飲料", 200, 30),
+//            ProductItem(2,R.drawable.ic_hello, "薯條", "炸物", 150, 45),
+//            ProductItem(3,R.drawable.ic_hello, "牛肉堡", "漢堡", 100, 150)
+//        )
+
+        val databaseHelper = ProductDBHelper(requireContext())  //product Table Helper
+        val productList = databaseHelper.getAllProducts()   //取得product table items
+
+        Log.d("現在取得的資料有", "789")
+
+
+        for (productItem in productList) {
+            // 在這裡使用 productItem，例如顯示它或進行其他處理
+            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
+        }
+
+        databaseHelper.close()
 
         // 讀取GridView的Adapter
         val adapter = ProductitemAdapter(productList)
