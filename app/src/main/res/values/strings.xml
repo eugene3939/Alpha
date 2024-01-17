@@ -9,7 +9,7 @@
     <string name="login_pas_hint">密碼</string>
     <string name="txt_login">登入</string>
     <string name="txt_sent">確定</string>
-    <string name="txt_table">輸入商品名稱或編號</string>
+    <string name="txt_table">輸入商品名稱</string>
     <string name="txt_clear">清除</string>
     <string name="txt_default">預設</string>
 

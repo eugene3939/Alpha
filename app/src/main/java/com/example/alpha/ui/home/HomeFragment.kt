@@ -1,7 +1,6 @@
 package com.example.alpha.ui.home
 
 import ProductitemAdapter
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.ProductDBHelper
+import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.ProductItem
+import com.example.alpha.ui.myObject.ShopCart
 
 class HomeFragment : Fragment() {
 
@@ -31,8 +32,18 @@ class HomeFragment : Fragment() {
     //儲存選擇的productItem位置
     private var selectedPositions = mutableSetOf<Int>()
 
-    // 新增一個變數來儲存篩選結果
+    //新增List儲存篩選結果
     private var filteredProductList: List<ProductItem> = emptyList()
+
+    //新增List儲存購物清單
+    private lateinit var shoppingCart: ShopCart
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 初始化 ShoppingCart
+        shoppingCart = ShopCart()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +55,9 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // 初始化 ShoppingCart
+        shoppingCart = ShopCart()
 
         //下拉式選單顯示全部的product種類
         val productTypes = resources.getStringArray(R.array.productType)  //全部的商品種類
@@ -92,15 +106,23 @@ class HomeFragment : Fragment() {
             val productName = selectedProduct.pName
             Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
 
-            // 切換選擇狀態
+            // 切換選擇狀態(是否放入購物車)
             if (selectedPositions.contains(position)) {
+                // 產品從購物車中移除
+                shoppingCart.removeProduct(selectedProduct)
                 selectedPositions.remove(position)
             } else {
                 selectedPositions.add(position)
+                // 產品加入購物車
+                shoppingCart.addProduct(selectedProduct)
             }
 
             // 更新 GridView 的外觀
             updateGridViewAppearance()
+
+            //更新購物車內容
+
+
         }
 
         // 讀取GridView的Adapter
@@ -116,6 +138,7 @@ class HomeFragment : Fragment() {
             //清空搜尋結果
             filteredProductList = productList
             updateGridView(filteredProductList,null,null)
+            shoppingCart.clear() // 清空購物車
             //清空點擊項目
 //            selectedPositions.clear()
 //            updateGridViewAppearance()
@@ -134,8 +157,23 @@ class HomeFragment : Fragment() {
 
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {
+        // 更新商品列表的 GridView
         val adapter = ProductitemAdapter(filteredProductList, selectedPositions)
         binding.grTableData.adapter = adapter
+
+        // 更新購物車的 GridView
+        val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
+        binding.lsBuyChart.adapter = adapterShop
+
+        // 更新其他相關的 UI 元素，例如總價格等
+        updateCartSummary()
+    }
+
+    private fun updateCartSummary() {
+        // 在這裡更新購物車的摘要信息，例如總價格、商品數量等
+//        val totalPrice = shoppingCart.calculateTotalPrice()
+//        binding.txtTotalPrice.text = "總價格: $totalPrice"
+        // 其他相關的更新...
     }
 
     //查詢特定column

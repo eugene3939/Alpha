@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
-        android:textSize="14sp" />
+        android:textSize="20sp" />
 
     <!-- 商品條碼 -->
     <TextView
@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/txt_default"
-        android:textSize="14sp"/>
+        android:textSize="20sp"/>
 
     <!-- 商品價格 -->
     <TextView
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textColor="@color/purple_200"
         android:textStyle="bold" />
 
@@ -61,6 +61,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
-        android:textSize="14sp" />
+        android:textSize="20sp" />
 
 </LinearLayout>
