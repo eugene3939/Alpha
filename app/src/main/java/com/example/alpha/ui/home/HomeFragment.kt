@@ -65,6 +65,9 @@ class HomeFragment : Fragment() {
                 }
 
                 Log.d("目前所在的Table索引是", "索引: $selectedItem")
+
+                selectedPositions.clear()
+                updateGridViewAppearance()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -108,7 +111,7 @@ class HomeFragment : Fragment() {
         //更新GridView顯示所在資料庫內容
         updateGridView(productList,null,null)
 
-        //清除全選項目
+        //清除全選項目按鈕
         binding.btnClear.setOnClickListener {
             selectedPositions.clear()
             updateGridViewAppearance()
@@ -125,10 +128,13 @@ class HomeFragment : Fragment() {
 
     //查詢特定column
     private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
-        // 如果 columnName 和 selectedItem 不為空，則篩選商品列表
+//         如果 columnName 和 selectedItem 不為空，則篩選商品列表
         filteredProductList  = if (columnName != null && selectedItem != null) {
             val selectedValue = selectedItem.toString()
-            productList.filter { getColumnValue(it, columnName) == selectedValue }
+            //productList.filter { getColumnValue(it, columnName) == selectedValue }    //從list撈篩選
+
+            val dbHelper = ProductDBHelper(requireContext())
+            dbHelper.getProductsByType(selectedValue)   //從table篩選
         } else {
             // 如果 columnName 或 selectedItem 為空，或 selectedItem 不是預期的型態，保持原始列表
             productList
