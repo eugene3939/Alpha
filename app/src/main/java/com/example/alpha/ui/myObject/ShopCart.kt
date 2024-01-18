@@ -1,5 +1,7 @@
 package com.example.alpha.ui.myObject
 
+import android.util.Log
+
 class ShopCart {
     val selectedProducts: MutableList<ProductItem> = mutableListOf()
 

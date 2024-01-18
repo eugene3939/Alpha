@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_acc_text"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold"/>
 
     <EditText
@@ -21,13 +21,13 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:hint="@string/login_acc_hint"
-        android:textSize="20sp"/>
+        android:textSize="30sp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_pas_text"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold"/>
 
     <EditText
@@ -36,13 +36,14 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:hint="@string/login_pas_hint"
-        android:textSize="20sp"/>
+        android:textSize="30sp"/>
 
     <Button
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:textSize="30sp"
         android:text="@string/txt_login"/>
 
 </LinearLayout>

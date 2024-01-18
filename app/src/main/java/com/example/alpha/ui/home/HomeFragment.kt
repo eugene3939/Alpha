@@ -18,6 +18,7 @@ import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
+import kotlin.reflect.typeOf
 
 class HomeFragment : Fragment() {
 
@@ -51,8 +52,6 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val homeViewModel =
-//            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -90,14 +89,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-//        // 創建一個包含 ProductItem 物件的測試集合
-//        val productList = listOf(
-//            ProductItem(1,R.drawable.ic_hello, "可樂", "飲料", 200, 30),
-//            ProductItem(2,R.drawable.ic_hello, "薯條", "炸物", 150, 45),
-//            ProductItem(3,R.drawable.ic_hello, "牛肉堡", "漢堡", 100, 150)
-//        )
-
-        //從ProductTable更新productList
+        //從ProductTable放資料到productList
         getProductTable()
 
         //grTableData點擊事件
@@ -106,24 +98,18 @@ class HomeFragment : Fragment() {
             val productName = selectedProduct.pName
             Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
 
-            if (selectedPositions.contains(position)) {
-                // 產品從購物車中移除
-                shoppingCart.removeProduct(selectedProduct)
-                selectedPositions.remove(position)
-            } else {
                 // 提示用戶輸入數量
                 showQuantityInputDialog { quantity ->
-                    if (quantity > 0) {
+                    if (quantity >= 0) {
                         // 用戶確認數量後，將商品及數量添加到購物車
                         shoppingCart.addProduct(selectedProduct, quantity)
                         selectedPositions.add(position)
-                        //傳遞uio0
                     }
-
+                    // 如果有包含數量0的shoppingCart則是直接刪除
+                    shoppingCart.selectedProducts.removeIf { it.selectedQuantity == 0 }
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
                 }
-            }
         }
 
         // 讀取GridView的Adapter
@@ -140,9 +126,6 @@ class HomeFragment : Fragment() {
             filteredProductList = productList
             updateGridView(filteredProductList,null,null)
             shoppingCart.clear() // 清空購物車
-            //清空點擊項目
-//            selectedPositions.clear()
-//            updateGridViewAppearance()
         }
 
         //單一欄位查詢
@@ -174,15 +157,12 @@ class HomeFragment : Fragment() {
             // 如果使用者輸入與預設值相同，將預設值設為1，否則使用使用者輸入的值
             val quantity = if (defaultValue == "1" && userInput == "") 1 else userInput.toIntOrNull() ?: 0
 
-            //Toast.makeText(requireContext(), "數量: $defaultValue", Toast.LENGTH_SHORT).show()
-
             // 調用回調函數
             callback.invoke(quantity)
         }
 
         builder.setNegativeButton("取消") { _, _ ->
-            // 用戶點擊取消，回調函數中的數量為零
-            callback.invoke(0)
+
         }
 
         builder.show()
