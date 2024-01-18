@@ -117,6 +117,7 @@ class HomeFragment : Fragment() {
                         // 用戶確認數量後，將商品及數量添加到購物車
                         shoppingCart.addProduct(selectedProduct, quantity)
                         selectedPositions.add(position)
+                        //傳遞
                     }
 
                     // 更新 GridView 的外觀和購物車內容
