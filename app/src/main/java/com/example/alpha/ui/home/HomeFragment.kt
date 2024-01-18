@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.ProductDBHelper
@@ -52,8 +51,8 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
+//        val homeViewModel =
+//            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -102,7 +101,7 @@ class HomeFragment : Fragment() {
         getProductTable()
 
         //grTableData點擊事件
-        binding.grTableData.setOnItemClickListener { parent, view, position, id ->
+        binding.grTableData.setOnItemClickListener { _, _, position, _ ->
             val selectedProduct = filteredProductList[position]
             val productName = selectedProduct.pName
             Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
