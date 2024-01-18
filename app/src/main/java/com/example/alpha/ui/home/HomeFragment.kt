@@ -119,6 +119,7 @@ class HomeFragment : Fragment() {
                         shoppingCart.addProduct(selectedProduct, quantity)
                         selectedPositions.add(position)
                     }
+
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
                 }
@@ -167,8 +168,15 @@ class HomeFragment : Fragment() {
         val quantityInput = dialogView.findViewById<EditText>(R.id.edt_click_num)
 
         builder.setPositiveButton("確定") { _, _ ->
-            // 用戶點擊確定，將數量轉換為整數並調用回調函數
-            val quantity = quantityInput.text.toString().toIntOrNull() ?: 0
+            val userInput = quantityInput.text.toString()
+            val defaultValue = quantityInput.hint?.toString() ?: "1"
+
+            // 如果使用者輸入與預設值相同，將預設值設為1，否則使用使用者輸入的值
+            val quantity = if (defaultValue == "1" && userInput == "") 1 else userInput.toIntOrNull() ?: 0
+
+            //Toast.makeText(requireContext(), "數量: $defaultValue", Toast.LENGTH_SHORT).show()
+
+            // 調用回調函數
             callback.invoke(quantity)
         }
 
