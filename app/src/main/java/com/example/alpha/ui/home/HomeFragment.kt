@@ -100,11 +100,12 @@ class HomeFragment : Fragment() {
 
                 // 提示用戶輸入數量
                 showQuantityInputDialog { quantity ->
-                    if (quantity >= 0) {
+                    if (quantity>=0) {
                         // 用戶確認數量後，將商品及數量添加到購物車
                         shoppingCart.addProduct(selectedProduct, quantity)
                         selectedPositions.add(position)
                     }
+                    //如果有包含數量0的shoppingCart則是直接刪除
                     // 如果有包含數量0的shoppingCart則是直接刪除
                     shoppingCart.selectedProducts.removeIf { it.selectedQuantity == 0 }
                     // 更新 GridView 的外觀和購物車內容
@@ -113,7 +114,7 @@ class HomeFragment : Fragment() {
         }
 
         // 讀取GridView的Adapter
-        val adapter = ProductitemAdapter(productList, selectedPositions)
+        val adapter = ProductitemAdapter(productList, shoppingCart)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns=productList.size
 
@@ -123,9 +124,12 @@ class HomeFragment : Fragment() {
         //清除全選項目按鈕
         binding.btnClear.setOnClickListener {
             //清空搜尋結果
-            filteredProductList = productList
-            updateGridView(filteredProductList,null,null)
-            shoppingCart.clear() // 清空購物車
+            filteredProductList = productList //搜尋結果回復
+            binding.edtSearchRow.setText("")
+            binding.edtSearchRow.setHint(R.string.txt_table)    //回復成預設搜尋文字
+
+            updateGridView(productList,null,null)   //回復總表查詢
+            //清空文字搜尋項目
         }
 
         //單一欄位查詢
@@ -157,12 +161,15 @@ class HomeFragment : Fragment() {
             // 如果使用者輸入與預設值相同，將預設值設為1，否則使用使用者輸入的值
             val quantity = if (defaultValue == "1" && userInput == "") 1 else userInput.toIntOrNull() ?: 0
 
+            //Toast.makeText(requireContext(), "數量: $defaultValue", Toast.LENGTH_SHORT).show()
+
             // 調用回調函數
             callback.invoke(quantity)
         }
 
         builder.setNegativeButton("取消") { _, _ ->
-
+            // 用戶點擊取消，回調函數中的數量為零
+            callback.invoke(0)
         }
 
         builder.show()
@@ -170,13 +177,13 @@ class HomeFragment : Fragment() {
 
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {
-        // 更新商品列表的 GridView
-        val adapter = ProductitemAdapter(filteredProductList, selectedPositions)
-        binding.grTableData.adapter = adapter
-
         // 更新購物車的 GridView
         val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
         binding.lsBuyChart.adapter = adapterShop
+
+        // 更新商品列表的 GridView
+        val adapter = ProductitemAdapter(filteredProductList,shoppingCart)
+        binding.grTableData.adapter = adapter
 
         // 更新其他相關的 UI 元素，例如總價格等
         updateCartSummary()
@@ -204,7 +211,7 @@ class HomeFragment : Fragment() {
         }
 
         // 讀取 GridView 的 Adapter
-        val adapter = ProductitemAdapter(filteredProductList , selectedPositions)
+        val adapter = ProductitemAdapter(filteredProductList , shoppingCart)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns = 2
     }

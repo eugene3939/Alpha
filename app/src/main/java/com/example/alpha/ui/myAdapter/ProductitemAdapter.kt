@@ -7,8 +7,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.alpha.R
 import com.example.alpha.ui.myObject.ProductItem
+import com.example.alpha.ui.myObject.ShopCart
 
-class ProductitemAdapter(private val dataList: List<ProductItem>, private val selectedPositions: Set<Int>) : BaseAdapter() {
+class ProductitemAdapter(private val dataList: List<ProductItem>, private val shoppingCart: ShopCart) : BaseAdapter() {
     override fun getCount(): Int {
         return dataList.size
     }
@@ -27,12 +28,12 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val se
         val data = getItem(position) as ProductItem
         viewHolder.bind(data)
 
-        // 檢查該位置是否被選擇，並設置相應的背景顏色
-        if (selectedPositions.contains(position)) {
-            // 被選擇時的背景顏色
+        // 檢查該商品是否在購物車中，並設置相應的背景顏色
+        if (isProductInCart(data)) {
+            // 商品在購物車中時的背景顏色
             view.setBackgroundResource(R.color.purple_200)
         } else {
-            // 正常狀態的背景顏色
+            // 商品不在購物車中時的背景顏色
             view.setBackgroundResource(R.color.white)
         }
 
@@ -59,5 +60,10 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val se
             productPrice.text = product.pPrice.toString()
             productNumber.text = product.pNumber.toString()
         }
+    }
+
+    private fun isProductInCart(product: ProductItem): Boolean {
+        // 這裡實現你判斷商品是否在購物車中的邏輯，例如根據商品 ID 來判斷
+        return shoppingCart.selectedProducts.any { it.pId == product.pId }
     }
 }
