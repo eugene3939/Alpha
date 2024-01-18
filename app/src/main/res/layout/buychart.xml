@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <TextView
@@ -15,8 +15,18 @@
         android:text="@string/txt_default"/>
 
     <TextView
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="10dp"
         android:id="@+id/txt_buyNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/number"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@color/darkBlue"/>
+
+    <TextView
+        android:layout_marginStart="10dp"
+        android:id="@+id/txt_buyPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/number"

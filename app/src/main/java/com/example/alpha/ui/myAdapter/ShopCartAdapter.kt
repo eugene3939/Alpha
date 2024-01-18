@@ -49,11 +49,14 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
         //請見buyChart.xml
         private val shopCartName: TextView = itemView.findViewById(R.id.txt_buyChart)
         private val shopCartNumber: TextView = itemView.findViewById(R.id.txt_buyNumber)
+        private val shopCartPrice: TextView = itemView.findViewById(R.id.txt_buyPrice)
+
 
         @SuppressLint("SetTextI18n")
         fun bind(shop: ProductItem) {
             shopCartName.text = shop.pName
             shopCartNumber.text = "${shop.selectedQuantity}個"
+            shopCartPrice.text = "${shop.pPrice}元"
         }
     }
 }

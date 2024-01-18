@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
 
-    <!--搜尋框-->
+    <!-- 搜尋框 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,34 +27,34 @@
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_weight="0.125"
             android:text="@string/txt_sent"/>
 
         <Button
             android:id="@+id/btn_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0.125"
             android:text="@string/txt_clear"/>
-
     </LinearLayout>
 
-    <!--商品分類-->
+    <!-- 商品分類 -->
     <Spinner
         android:id="@+id/sp_productType"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="50dp"/>
 
-    <!--欄位內容-->
+    <!-- 欄位內容 -->
     <GridView
         android:id="@+id/gr_tableData"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <!--購物車-->
+    <!-- 購物車 -->
     <ListView
         android:id="@+id/ls_buyChart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>
