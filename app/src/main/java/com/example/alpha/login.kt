@@ -87,6 +87,7 @@ class login : AppCompatActivity() {
         countCursor.close()
     }
 
+    //修改欄位需要修改login(本頁)、dbHelper(對應的),物件(product, discountProduct)
     private fun createUserDB() {
         val dbHelper = UserDBHelper(this)
         val defaultUserData = listOf(
@@ -119,8 +120,8 @@ class login : AppCompatActivity() {
     private fun createDiscountDB() {
         val dbHelper = DiscountDBHelper(this)
         val defaultDiscount = listOf(
-            "INSERT INTO DiscountTable(d_pId, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(1, 0.9 , 0, 0);",//即商品編號1號打九折
-            "INSERT INTO DiscountTable(d_pId, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(2, 0, 30, 3);"//即商品編號2與3搭配時限折30元
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(1,'蘋果9折', 0.9 , 0, 0);",//即商品編號1號打九折
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(2,'鳳梨套組', 0, 30, 3);"//即商品編號2與3搭配時限折30元
         )
         createDatabase(dbHelper, "DiscountTable", defaultDiscount)
     }
