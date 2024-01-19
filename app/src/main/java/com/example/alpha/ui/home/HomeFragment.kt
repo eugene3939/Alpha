@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.alpha.databinding.FragmentHomeBinding
@@ -50,7 +52,7 @@ class HomeFragment : Fragment() {
         shoppingCart = ShopCart()
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -96,7 +98,7 @@ class HomeFragment : Fragment() {
         //從ProductTable放資料到productList
         getProductTable()
 
-        //grTableData點擊事件
+        //grTableData點擊事件(選擇商品、數量)
         binding.grTableData.setOnItemClickListener { _, _, position, _ ->
             val selectedProduct = filteredProductList[position]
             val productName = selectedProduct.pName
@@ -150,8 +152,43 @@ class HomeFragment : Fragment() {
             }
         }
 
+        //送出購物車
+        binding.btnDeal.setOnClickListener {
+            //顯示所有購物車項目，並引導使用者到付款頁面(這邊用AlertDialog檢查)
+            val builder = AlertDialog.Builder(requireContext())
+            val inflater = LayoutInflater.from(requireContext())
+            val dialogView = inflater.inflate(R.layout.purchase_confirm, null)
+
+            // 顯示購物車的ListView
+            val shopCartList = dialogView.findViewById<ListView>(R.id.buyChart_content)
+            val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
+            shopCartList.adapter = adapterShop
+
+            //顯示總價
+            val  shopTotalPrice = dialogView.findViewById<TextView>(R.id.buyChart_totalPrice)
+            shopTotalPrice.text = "總價: $totalCartPrice"
+
+            builder.setView(dialogView)
+            builder.setTitle("購買項目")
+
+            builder.setPositiveButton("確定") { _, _ ->
+                //送出商品
+                Toast.makeText(requireContext(),"已送出，前往付款頁面",Toast.LENGTH_SHORT).show()
+            }
+
+            builder.setNegativeButton("取消") { dialog, _ ->
+                // 用戶點擊取消
+                dialog.dismiss()
+            }
+
+            builder.show()
+            //商品庫存等交易都確定後才扣除
+        }
+
         return root
     }
+
+    //送出之前先讓用戶檢查購物車
 
     //數量選擇
     private fun showQuantityInputDialog(callback: (Int) -> Unit) {
@@ -183,9 +220,9 @@ class HomeFragment : Fragment() {
 
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {
-        // 更新購物車的 GridView
-        val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
-        binding.lsBuyChart.adapter = adapterShop
+//        // 更新購物車的 GridView
+//        val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
+//        binding.lsBuyChart.adapter = adapterShop
 
         // 更新商品列表的 GridView
         val adapter = ProductitemAdapter(filteredProductList,shoppingCart)
