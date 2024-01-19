@@ -13,6 +13,8 @@
     <string name="txt_clear">清除</string>
     <string name="txt_default">預設</string>
     <string name="number">1</string>
+    <string name="txt_totalPrice">總價</string>
+    <string name="txt_sentPrice">結帳</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>

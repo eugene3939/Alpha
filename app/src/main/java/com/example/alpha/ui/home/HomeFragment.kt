@@ -1,6 +1,7 @@
 package com.example.alpha.ui.home
 
 import ProductitemAdapter
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
@@ -18,7 +19,6 @@ import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
-import kotlin.reflect.typeOf
 
 class HomeFragment : Fragment() {
 
@@ -40,6 +40,9 @@ class HomeFragment : Fragment() {
     //新增List儲存購物清單
     private lateinit var shoppingCart: ShopCart
 
+    //總價購物車總價
+    private var totalCartPrice = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,6 +50,7 @@ class HomeFragment : Fragment() {
         shoppingCart = ShopCart()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -106,10 +110,17 @@ class HomeFragment : Fragment() {
                         selectedPositions.add(position)
                     }
                     //如果有包含數量0的shoppingCart則是直接刪除
-                    // 如果有包含數量0的shoppingCart則是直接刪除
                     shoppingCart.selectedProducts.removeIf { it.selectedQuantity == 0 }
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
+
+                    //計算商品總價
+                    var price = 0 //計算價格的區域變數(每次計算都先歸0)
+                    for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
+                        price+= i.selectedQuantity*i.pPrice
+                    }
+                    totalCartPrice = price  //更新到全域變數
+                    binding.txtTotalPrice.text="總價: ${totalCartPrice}元"
                 }
         }
 
@@ -125,11 +136,10 @@ class HomeFragment : Fragment() {
         binding.btnClear.setOnClickListener {
             //清空搜尋結果
             filteredProductList = productList //搜尋結果回復
-            binding.edtSearchRow.setText("")
+            binding.edtSearchRow.setText("")    //清空文字搜尋項目
             binding.edtSearchRow.setHint(R.string.txt_table)    //回復成預設搜尋文字
 
             updateGridView(productList,null,null)   //回復總表查詢
-            //清空文字搜尋項目
         }
 
         //單一欄位查詢
@@ -156,12 +166,7 @@ class HomeFragment : Fragment() {
 
         builder.setPositiveButton("確定") { _, _ ->
             val userInput = quantityInput.text.toString()
-            val defaultValue = quantityInput.hint?.toString() ?: "1"
-
-            // 如果使用者輸入與預設值相同，將預設值設為1，否則使用使用者輸入的值
-            val quantity = if (defaultValue == "1" && userInput == "") 1 else userInput.toIntOrNull() ?: 0
-
-            //Toast.makeText(requireContext(), "數量: $defaultValue", Toast.LENGTH_SHORT).show()
+            val quantity = userInput.toIntOrNull() ?: 1
 
             // 調用回調函數
             callback.invoke(quantity)
@@ -175,6 +180,7 @@ class HomeFragment : Fragment() {
         builder.show()
     }
 
+
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {
         // 更新購物車的 GridView
@@ -184,16 +190,6 @@ class HomeFragment : Fragment() {
         // 更新商品列表的 GridView
         val adapter = ProductitemAdapter(filteredProductList,shoppingCart)
         binding.grTableData.adapter = adapter
-
-        // 更新其他相關的 UI 元素，例如總價格等
-        updateCartSummary()
-    }
-
-    private fun updateCartSummary() {
-        // 在這裡更新購物車的摘要信息，例如總價格、商品數量等
-//        val totalPrice = shoppingCart.calculateTotalPrice()
-//        binding.txtTotalPrice.text = "總價格: $totalPrice"
-        // 其他相關的更新...
     }
 
     //查詢特定column
@@ -220,12 +216,6 @@ class HomeFragment : Fragment() {
     private fun getProductTable() {
         val databaseHelper = ProductDBHelper(requireContext())  //product Table Helper
         productList = databaseHelper.getAllProducts()   //取得product table items
-
-        //取得資料庫的物件到productList
-//        for (productItem in productList) {
-//            // 在這裡使用 productItem，例如顯示它或進行其他處理
-//            Log.d("Product", "ID: ${productItem.pId}, Name: ${productItem.pName}")
-//        }
 
         databaseHelper.close()
     }

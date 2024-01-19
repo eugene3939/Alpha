@@ -26,7 +26,6 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
         return position.toLong()
     }
 
-    // 在 getView 方法中更新相應的背景顏色
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = convertView ?: LayoutInflater.from(parent?.context).inflate(R.layout.buychart, parent, false)
         val viewHolder = ViewHolder(view)
@@ -41,13 +40,16 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
         private val shopCartName: TextView = itemView.findViewById(R.id.txt_buyChart)
         private val shopCartNumber: TextView = itemView.findViewById(R.id.txt_buyNumber)
         private val shopCartPrice: TextView = itemView.findViewById(R.id.txt_buyPrice)
+        private val shopCartSimplePrice: TextView = itemView.findViewById(R.id.txt_buySimplePrice)
 
 
         @SuppressLint("SetTextI18n")
         fun bind(shop: ProductItem) {
             shopCartName.text = shop.pName
-            shopCartNumber.text = "${shop.selectedQuantity}個"
-            shopCartPrice.text = "${shop.pPrice}元"
+            shopCartNumber.text = "${shop.selectedQuantity}x"
+            shopCartPrice.text = "${shop.pPrice}="
+            shopCartSimplePrice.text = "${shop.selectedQuantity*shop.pPrice}"
         }
     }
+
 }
