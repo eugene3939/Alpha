@@ -5,6 +5,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
+    <!--購物車確認品項-->
+
+    <!--購物車商品-->
     <TextView
         android:id="@+id/txt_buyChart"
         android:layout_width="wrap_content"
@@ -14,6 +17,7 @@
         android:textColor="@color/darkBlue"
         android:text="@string/txt_default"/>
 
+    <!--購物車商品數量-->
     <TextView
         android:layout_marginStart="10dp"
         android:id="@+id/txt_buyNumber"
@@ -24,6 +28,7 @@
         android:textStyle="bold"
         android:textColor="@color/darkBlue"/>
 
+    <!--商品單價-->
     <TextView
         android:layout_marginStart="10dp"
         android:id="@+id/txt_buyPrice"
@@ -34,6 +39,7 @@
         android:textStyle="bold"
         android:textColor="@color/darkBlue"/>
 
+    <!--單項商品價格合計-->
     <TextView
         android:id="@+id/txt_buySimplePrice"
         android:layout_width="wrap_content"
@@ -42,6 +48,4 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@color/purple_500"/>
-
-
 </LinearLayout>

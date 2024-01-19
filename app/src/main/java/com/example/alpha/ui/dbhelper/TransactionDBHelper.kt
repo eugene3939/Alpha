@@ -16,8 +16,6 @@ class TransactionDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 + "tId INTEGER PRIMARY KEY AUTOINCREMENT,"  //交易id
                 + "tDate DATE,"     //交易日期
                 + "tDescription TEXT);")  //交易描述
-
-//        Log.d("進入table", "link start")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

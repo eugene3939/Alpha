@@ -41,7 +41,7 @@
         <item>pPhoto</item>
     </string-array>
 
-    <!--ProductDB欄位-->
+    <!--TransactionTable欄位-->
     <string-array name="TransactionItems">
         <item>tId</item>
         <item>tDate</item>

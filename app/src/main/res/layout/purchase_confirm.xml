@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--購物車項目和單價-->
     <ListView
         android:id="@+id/buyChart_content"
         android:layout_width="match_parent"
-        android:layout_height="600dp"/>
+        android:layout_height="600dp">
+    </ListView>
+
+    <!--購物車折扣-->
+    <ListView
+        android:id="@+id/buyChart_discount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/buyChart_totalPrice"

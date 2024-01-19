@@ -1,6 +1,6 @@
 package com.example.alpha.ui.home
 
-import ProductitemAdapter
+import ProductItemAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
@@ -17,8 +17,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
+import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
+import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
 
@@ -30,19 +32,17 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    //product Table的項目
+    //product Table的項目(總表)
     private lateinit var productList: List<ProductItem>
+    //新增List儲存篩選結果(依據文字搜尋或欄位搜尋結果)
+    private var filteredProductList: List<ProductItem> = emptyList()
 
     //儲存選擇的productItem位置
     private var selectedPositions = mutableSetOf<Int>()
 
-    //新增List儲存篩選結果
-    private var filteredProductList: List<ProductItem> = emptyList()
-
     //新增List儲存購物清單
     private lateinit var shoppingCart: ShopCart
-
-    //總價購物車總價
+    //購物車總價
     private var totalCartPrice = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,6 +116,13 @@ class HomeFragment : Fragment() {
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
 
+                    //確認是否有折扣
+                    val x = checkDiscount(shoppingCart.selectedProducts)
+
+                    for (i in x)
+                        Log.d("折扣商品: ","有$i")
+
+
                     //計算商品總價
                     var price = 0 //計算價格的區域變數(每次計算都先歸0)
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
@@ -127,7 +134,7 @@ class HomeFragment : Fragment() {
         }
 
         // 讀取GridView的Adapter
-        val adapter = ProductitemAdapter(productList, shoppingCart)
+        val adapter = ProductItemAdapter(productList, shoppingCart)
         binding.grTableData.adapter = adapter
         binding.grTableData.numColumns=productList.size
 
@@ -152,7 +159,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        //送出購物車
+        //送出之前先讓用戶檢查購物車
         binding.btnDeal.setOnClickListener {
             //顯示所有購物車項目，並引導使用者到付款頁面(這邊用AlertDialog檢查)
             val builder = AlertDialog.Builder(requireContext())
@@ -167,6 +174,9 @@ class HomeFragment : Fragment() {
             //顯示總價
             val  shopTotalPrice = dialogView.findViewById<TextView>(R.id.buyChart_totalPrice)
             shopTotalPrice.text = "總價: $totalCartPrice"
+
+            //確認折扣
+            checkDiscount(shoppingCart.selectedProducts)
 
             builder.setView(dialogView)
             builder.setTitle("購買項目")
@@ -187,8 +197,6 @@ class HomeFragment : Fragment() {
 
         return root
     }
-
-    //送出之前先讓用戶檢查購物車
 
     //數量選擇
     private fun showQuantityInputDialog(callback: (Int) -> Unit) {
@@ -211,7 +219,7 @@ class HomeFragment : Fragment() {
 
         builder.setNegativeButton("取消") { _, _ ->
             // 用戶點擊取消，回調函數中的數量為零
-            callback.invoke(0)
+            //callback.invoke(0)
         }
 
         builder.show()
@@ -220,18 +228,14 @@ class HomeFragment : Fragment() {
 
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {
-//        // 更新購物車的 GridView
-//        val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
-//        binding.lsBuyChart.adapter = adapterShop
-
         // 更新商品列表的 GridView
-        val adapter = ProductitemAdapter(filteredProductList,shoppingCart)
+        val adapter = ProductItemAdapter(filteredProductList,shoppingCart)
         binding.grTableData.adapter = adapter
     }
 
     //查詢特定column
     private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
-//         如果 columnName 和 selectedItem 不為空，則篩選商品列表
+//      如果 columnName 和 selectedItem 不為空，則篩選商品列表
         filteredProductList  = if (columnName != null && selectedItem != null) {
             val selectedValue = selectedItem.toString()
             //productList.filter { getColumnValue(it, columnName) == selectedValue }    //從list撈篩選
@@ -244,9 +248,9 @@ class HomeFragment : Fragment() {
         }
 
         // 讀取 GridView 的 Adapter
-        val adapter = ProductitemAdapter(filteredProductList , shoppingCart)
+        val adapter = ProductItemAdapter(filteredProductList , shoppingCart)
         binding.grTableData.adapter = adapter
-        binding.grTableData.numColumns = 2
+        binding.grTableData.numColumns = 3
     }
 
     //取得product table
@@ -255,6 +259,20 @@ class HomeFragment : Fragment() {
         productList = databaseHelper.getAllProducts()   //取得product table items
 
         databaseHelper.close()
+    }
+
+    //確認商品折扣，並顯示在listView
+    private fun checkDiscount(selectedProducts: MutableList<ProductItem>): List<DiscountedProduct> {
+        val discountItemsInCart: List<DiscountedProduct>
+        val databaseHelper = DiscountDBHelper(requireContext())  //Discount Table Helper
+
+        val selectedProductIds = selectedProducts.map { it.pId.toString() }
+
+        // 調用你的 DiscountDBHelper 中的方法
+        discountItemsInCart = databaseHelper.searchDiscountItems("d_pId", selectedProductIds,selectedProducts)
+        databaseHelper.close()
+
+        return discountItemsInCart
     }
 
     override fun onDestroyView() {

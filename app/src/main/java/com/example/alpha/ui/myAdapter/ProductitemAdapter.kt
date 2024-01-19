@@ -10,9 +10,8 @@ import com.example.alpha.R
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
 
-class ProductitemAdapter(private val dataList: List<ProductItem>, private val shoppingCart: ShopCart) : BaseAdapter() {
+class ProductItemAdapter(private val dataList: List<ProductItem>, private val shoppingCart: ShopCart) : BaseAdapter() {
 
-    var product_chooseNumber = 0
     override fun getCount(): Int {
         return dataList.size
     }
@@ -65,11 +64,11 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val sh
         private val productImg: ImageView = itemView.findViewById(R.id.img_productItem)
         private val productName: TextView = itemView.findViewById(R.id.txt_productName)
         private val productType: TextView = itemView.findViewById(R.id.txt_productType)
-        private val productBarcode: TextView = itemView.findViewById(R.id.txt_productBarcode)
         private val productPrice: TextView = itemView.findViewById(R.id.txt_productPrice)
         private val productNumber: TextView = itemView.findViewById(R.id.txt_productNumber)
 
         val shopNumber: TextView = itemView.findViewById(R.id.txt_product_buy_number)
+        @SuppressLint("SetTextI18n")
         fun bind(product: ProductItem) {
             // 使用 Glide 或其他圖片載入庫載入商品圖片
             Glide.with(productImg.context)
@@ -78,9 +77,8 @@ class ProductitemAdapter(private val dataList: List<ProductItem>, private val sh
 
             productName.text = product.pName
             productType.text = product.pType
-            productBarcode.text = product.pBarcode
-            productPrice.text = product.pPrice.toString()
-            productNumber.text = product.pNumber.toString()
+            productPrice.text = "${product.pPrice}元"
+            productNumber.text = "${product.pNumber}個"
         }
     }
 

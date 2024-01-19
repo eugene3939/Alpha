@@ -5,6 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!---點擊商品後進入的選擇數量->
+
+    <!-輸入商品購買數量-->
     <EditText
         android:id="@+id/edt_click_num"
         android:layout_width="match_parent"
@@ -13,6 +16,7 @@
         android:inputType="number"
         android:hint="@string/number"
         android:maxLength="5"
-        tools:ignore="LabelFor" />
+        tools:ignore="LabelFor"
+        android:autofillHints="" />
 
 </LinearLayout>

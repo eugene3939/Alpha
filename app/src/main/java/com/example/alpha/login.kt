@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.alpha.databinding.ActivityLoginBinding
+import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.dbhelper.TransactionDBHelper
 import com.example.alpha.ui.dbhelper.UserDBHelper
@@ -28,8 +29,9 @@ class login : AppCompatActivity() {
         setContentView(binding.root)
 
         createTransactionDB() //創建TransactionDB
-        createProductDB() //創建ProductDB
-        createUserDB()  //創建UserDB
+        createProductDB()     //創建ProductDB
+        createDiscountDB()    //創建DiscountDB
+        createUserDB()        //創建UserDB
 
         // 登入按鈕
         binding.btnLogin.setOnClickListener {
@@ -97,9 +99,9 @@ class login : AppCompatActivity() {
     private fun createProductDB() {
         val dbHelper = ProductDBHelper(this)
         val defaultProductData = listOf(
-            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Apple', 'fruit','SBC', 50, 100, 0);",
-            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Pineapple', 'fruit','123', 100, 80, 0);",
-            "INSERT INTO ProductTable(pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES('Snapple', 'other','A12', 200, 60, 0);"
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(1,'Apple', 'fruit','SBC', 50, 100, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(2,'Pineapple', 'fruit','123', 100, 80, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(3,'Snapple', 'other','A12', 200, 60, 0);"
         )
         createDatabase(dbHelper, "ProductTable", defaultProductData)
     }
@@ -112,6 +114,15 @@ class login : AppCompatActivity() {
             "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-12','0');"
         )
         createDatabase(dbHelper, "TransactionTable", defaultTransactionData)
+    }
+
+    private fun createDiscountDB() {
+        val dbHelper = DiscountDBHelper(this)
+        val defaultDiscount = listOf(
+            "INSERT INTO DiscountTable(d_pId, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(1, 0.9 , 0, 0);",//即商品編號1號打九折
+            "INSERT INTO DiscountTable(d_pId, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(2, 0, 30, 3);"//即商品編號2與3搭配時限折30元
+        )
+        createDatabase(dbHelper, "DiscountTable", defaultDiscount)
     }
 
     override fun onDestroy() {
