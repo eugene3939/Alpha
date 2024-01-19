@@ -42,7 +42,6 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
         private val shopCartPrice: TextView = itemView.findViewById(R.id.txt_buyPrice)
         private val shopCartSimplePrice: TextView = itemView.findViewById(R.id.txt_buySimplePrice)
 
-
         @SuppressLint("SetTextI18n")
         fun bind(shop: ProductItem) {
             shopCartName.text = shop.pName

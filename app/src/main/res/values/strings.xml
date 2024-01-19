@@ -15,6 +15,7 @@
     <string name="number">1</string>
     <string name="txt_totalPrice">總價</string>
     <string name="txt_sentPrice">結帳</string>
+    <string name="zero">0</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>
