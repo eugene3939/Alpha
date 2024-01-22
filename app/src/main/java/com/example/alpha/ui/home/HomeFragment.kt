@@ -127,7 +127,7 @@ class HomeFragment : Fragment() {
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
                         price+= i.selectedQuantity*i.pPrice
                     }
-                    totalCartPrice = price  //更新到全域變數
+                    totalCartPrice = price  //更新總價到全域變數
                     binding.txtTotalPrice.text="總價: ${totalCartPrice}元"
                 }
         }
@@ -175,7 +175,11 @@ class HomeFragment : Fragment() {
             shopTotalPrice.text = "總價: $totalCartPrice"
 
             //確認折扣
-            checkDiscount(shoppingCart.selectedProducts)
+            val CartDiscount = checkDiscount(shoppingCart.selectedProducts)
+
+            //顯示折扣內容
+            val discountAdapter = dialogView.findViewById<ListView>(R.id.buyChart_discount)
+            val adapterDiscount =
 
             builder.setView(dialogView)
             builder.setTitle("購買項目")
@@ -267,7 +271,7 @@ class HomeFragment : Fragment() {
 
         val selectedProductIds = selectedProducts.map { it.pId.toString() }
 
-        // 調用你的 DiscountDBHelper 中的方法
+        // 調用 DiscountDBHelper 中的方法
         discountItemsInCart = databaseHelper.searchDiscountItems("d_pId", selectedProductIds,selectedProducts)
         databaseHelper.close()
 

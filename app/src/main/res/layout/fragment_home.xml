@@ -51,12 +51,12 @@
         android:layout_height="500dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-<!--    &lt;!&ndash; 購物車 &ndash;&gt;-->
-<!--    <ListView-->
-<!--        android:id="@+id/ls_buyChart"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="200dp"-->
-<!--        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>LinearLayoutManager-->
+    <!-- 購物車 -->
+    <ListView
+        android:id="@+id/ls_buyChart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <LinearLayout
         android:layout_width="match_parent"
