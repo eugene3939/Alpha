@@ -20,6 +20,7 @@ import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
+import com.example.alpha.ui.myAdapter.discountProductAdapter
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
@@ -121,7 +122,6 @@ class HomeFragment : Fragment() {
                     for (i in x)
                         Log.d("折扣商品: ","有$i")
 
-
                     //計算商品總價
                     var price = 0 //計算價格的區域變數(每次計算都先歸0)
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
@@ -175,11 +175,12 @@ class HomeFragment : Fragment() {
             shopTotalPrice.text = "總價: $totalCartPrice"
 
             //確認折扣
-            val CartDiscount = checkDiscount(shoppingCart.selectedProducts)
+            val discountProducts = checkDiscount(shoppingCart.selectedProducts)
 
-            //顯示折扣內容
-            val discountAdapter = dialogView.findViewById<ListView>(R.id.buyChart_discount)
-            val adapterDiscount =
+            //顯示折扣內容於購物車
+            val discountItemList = dialogView.findViewById<ListView>(R.id.buyChart_discount)
+            val adapterDiscount = discountProductAdapter(discountProducts)
+            discountItemList.adapter = adapterDiscount
 
             builder.setView(dialogView)
             builder.setTitle("購買項目")

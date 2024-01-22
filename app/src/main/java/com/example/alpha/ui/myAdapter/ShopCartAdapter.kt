@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import com.example.alpha.R
 import com.example.alpha.ui.myObject.ProductItem
-import com.example.alpha.ui.myObject.ShopCart
 
 class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
 
@@ -50,5 +47,4 @@ class ShopCartAdapter(private val dataList: List<ProductItem>) : BaseAdapter() {
             shopCartSimplePrice.text = "${shop.selectedQuantity*shop.pPrice}"
         }
     }
-
 }

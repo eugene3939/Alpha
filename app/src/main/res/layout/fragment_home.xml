@@ -48,14 +48,14 @@
     <GridView
         android:id="@+id/gr_tableData"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="350dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <!-- 購物車 -->
     <ListView
         android:id="@+id/ls_buyChart"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <LinearLayout
