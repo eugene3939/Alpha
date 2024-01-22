@@ -20,7 +20,7 @@ import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
-import com.example.alpha.ui.myAdapter.discountProductAdapter
+import com.example.alpha.ui.myAdapter.DiscountProductAdapter
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
@@ -61,9 +61,6 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        // 初始化 ShoppingCart
-        shoppingCart = ShopCart()
 
         //下拉式選單顯示全部的product種類
         val productTypes = resources.getStringArray(R.array.productType)  //全部的商品種類
@@ -116,12 +113,6 @@ class HomeFragment : Fragment() {
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
 
-                    //確認是否有折扣
-                    val x = checkDiscount(shoppingCart.selectedProducts)
-
-                    for (i in x)
-                        Log.d("折扣商品: ","有$i")
-
                     //計算商品總價
                     var price = 0 //計算價格的區域變數(每次計算都先歸0)
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
@@ -170,17 +161,17 @@ class HomeFragment : Fragment() {
             val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
             shopCartList.adapter = adapterShop
 
-            //顯示總價
-            val  shopTotalPrice = dialogView.findViewById<TextView>(R.id.buyChart_totalPrice)
-            shopTotalPrice.text = "總價: $totalCartPrice"
-
             //確認折扣
             val discountProducts = checkDiscount(shoppingCart.selectedProducts)
 
             //顯示折扣內容於購物車
             val discountItemList = dialogView.findViewById<ListView>(R.id.buyChart_discount)
-            val adapterDiscount = discountProductAdapter(discountProducts)
+            val adapterDiscount = DiscountProductAdapter(discountProducts,filteredProductList)
             discountItemList.adapter = adapterDiscount
+
+            //顯示總價
+            val  shopTotalPrice = dialogView.findViewById<TextView>(R.id.buyChart_totalPrice)
+            shopTotalPrice.text = "總價: $totalCartPrice"
 
             builder.setView(dialogView)
             builder.setTitle("購買項目")
