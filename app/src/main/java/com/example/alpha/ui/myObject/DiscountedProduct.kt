@@ -5,5 +5,5 @@ data class DiscountedProduct(val pId: Int,
                              val pDiscount: Double,
                              val pChargebacks: Int,
                              val pClusterItem: String?,
-                             val selectedQuantity: Int
+                             val selectedQuantity: Int //單品選擇數量
 )

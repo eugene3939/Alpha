@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.alpha.R
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 
@@ -24,8 +23,7 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE IF NOT EXISTS DiscountTable (" //建立ProductTable
                 + "d_pId INTEGER,"          //商品id
-//                + "d_price INTEGER,"        //商品原價
-                + "d_description TEXT,"     //折扣描述
+                + "d_description TEXT,"      //折扣描述
                 + "d_pDiscount DOUBLE,"     //折扣比例 ex:90%
                 + "d_Chargebacks INT,"      //折抵額度0表示沒有(不與折扣數量合併)，且優先於折扣比例 ex:折30元
                 + "d_pClusterItem TEXT);")  //組合對象(若無則為單項折扣)，沒有填0，若有則不是適用原有折數，以單向扣款為主

@@ -2,7 +2,6 @@ package com.example.alpha.ui.dbhelper
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.alpha.R
@@ -23,7 +22,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 + "pBarcode TEXT,"            //商品條碼
                 + "pPrice INTEGER,"           //商品價錢
                 + "pNumber INTEGER,"          //商品數量
-                + "pPhoto TEXT);")            //商品圖片
+                + "pPhoto INTEGER);")         //商品圖片
 
 //        Log.d("進入table", "link start")
     }
