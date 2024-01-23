@@ -28,6 +28,7 @@ class login : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //整檔
         createTransactionDB() //創建TransactionDB
         createProductDB()     //創建ProductDB
         createDiscountDB()    //創建DiscountDB
@@ -121,7 +122,8 @@ class login : AppCompatActivity() {
         val dbHelper = DiscountDBHelper(this)
         val defaultDiscount = listOf(
             "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(1,'蘋果9折', 0.1 , 0, 0);",//即商品編號1號打九折
-            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(2,'鳳梨套組', 0, 30, 3);"//即商品編號2與3搭配時限折30元
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(2,'鳳梨套組', 0, 30, 3);",//即商品編號2與3搭配時限折30元
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks, d_pClusterItem) VALUES(3,'鳳梨套組', 0, 30, 2);"//即商品編號2與3搭配時限折30元
         )
         createDatabase(dbHelper, "DiscountTable", defaultDiscount)
     }

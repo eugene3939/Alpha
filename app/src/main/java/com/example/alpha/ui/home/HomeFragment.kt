@@ -21,7 +21,7 @@ import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
-import com.example.alpha.ui.myObject.DiscountCalculator
+import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
@@ -37,6 +37,8 @@ class HomeFragment : Fragment() {
     private lateinit var productList: List<ProductItem>
     //新增List儲存篩選結果(依據文字搜尋或欄位搜尋結果)
     private var filteredProductList: List<ProductItem> = emptyList()
+    //儲存折扣項目(描述、id、數量、價格)
+    private val discountInfoList = mutableListOf<DiscountInfo>()
 
     //儲存選擇的productItem位置
     private var selectedPositions = mutableSetOf<Int>()
@@ -48,9 +50,6 @@ class HomeFragment : Fragment() {
 
     //總折扣額度
     var totalDiscount = 0
-
-    private lateinit var discountCalculator: DiscountCalculator
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +64,6 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -102,9 +100,6 @@ class HomeFragment : Fragment() {
         //從ProductTable放資料到productList
         getProductTable()
 
-        // 初始化 DiscountCalculator
-        discountCalculator = DiscountCalculator(productList)
-
         //grTableData點擊事件(選擇商品、數量)
         binding.grTableData.setOnItemClickListener { _, _, position, _ ->
             val selectedProduct = filteredProductList[position]
@@ -132,10 +127,15 @@ class HomeFragment : Fragment() {
 
                     Log.d("顯示折扣: ","$totalDiscount")
 
+                    //顯示各個商品discountInfoList的資訊(折扣清單)
+                    for (i in discountInfoList){
+                        Log.d("各項商品詳細折價資訊","$i")
+                  }
+
                     //計算商品總價
                     var price = 0 //計算價格的區域變數(每次計算都先歸0)
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
-                        price+= i.selectedQuantity*i.pPrice
+                        price+= i.selectedQuantity * i.pPrice
                     }
 
                     totalCartPrice = price  //更新總價到全域變數
@@ -182,12 +182,8 @@ class HomeFragment : Fragment() {
             val adapterShop = ShopCartAdapter(shoppingCart.selectedProducts)
             shopCartList.adapter = adapterShop
 
-            //確認折扣
-            val discountProducts = checkDiscount(shoppingCart.selectedProducts)
-
-            //顯示折扣內容於購物車
             val discountItemList = dialogView.findViewById<ListView>(R.id.buyChart_discount)
-            val adapterDiscount = DiscountProductAdapter(discountProducts,filteredProductList)
+            val adapterDiscount = DiscountProductAdapter(discountInfoList)
             discountItemList.adapter = adapterDiscount
 
             //顯示總價
@@ -201,7 +197,6 @@ class HomeFragment : Fragment() {
                 //送出商品
                 Toast.makeText(requireContext(),"已送出，前往付款頁面",Toast.LENGTH_SHORT).show()
             }
-
             builder.setNegativeButton("取消") { dialog, _ ->
                 // 用戶點擊取消
                 dialog.dismiss()
@@ -216,24 +211,74 @@ class HomeFragment : Fragment() {
 
     //取得總折扣金額
     private fun getTotalDiscount(discountProducts: List<DiscountedProduct>): Int {
-        var totalDiscount = 0   //總折扣金額
-
+        val processedClusterItems = mutableSetOf<Int>()  // 用於追蹤已處理過的組合商品
         val dbHelper = ProductDBHelper(requireContext())
 
-        for (i in discountProducts){
-            //取得購物車項目中的商品價格
-            val singleItem = dbHelper.getProductsByCondition("pId", i.pId.toString())
+        var totalDiscount = 0
 
-            Log.d("早上好","現在我有: ${singleItem[0].pPrice}")    //有點風險的搜尋方式，不過pId是primary key應該可接受
-            if (i.pDiscount>0.0){   //單一商品折扣
-                totalDiscount += (i.pDiscount * i.selectedQuantity * singleItem[0].pPrice).toInt()
-            };if(i.pChargebacks>0){ //組合商品優惠
-                totalDiscount+=i.pChargebacks*i.selectedQuantity
+        // 每次讀取都清除所有紀錄
+        processedClusterItems.clear() // 清洗所有折扣紀錄
+        discountInfoList.clear()    // 清洗瀏覽紀錄
+
+        for (i in discountProducts) {
+            // 取得購物車項目中的商品價格
+            val singleItem = dbHelper.getProductsByCondition("pId", i.pId.toString())   // 找出與購物車對應的商品
+
+            var sum = 0   // 總折扣金額
+            var permission = false // 確認是否能加入清單
+
+            if (i.pDiscount > 0.0) {   // 單一商品折扣
+                sum += (i.pDiscount * i.selectedQuantity * singleItem[0].pPrice).toInt()
+                permission = true
             }
+
+            if (i.pChargebacks > 0 && !processedClusterItems.contains(i.pId)) { // A+B優惠現金折價優惠(每次都檢查)
+                val compareId = i.pClusterItem?.toIntOrNull() ?: 0  // 對應的商品id，如果沒有就用0
+                Log.d("讀取id:　", "$compareId")
+
+                val compareItem = discountProducts.find { it.pId == compareId }
+
+                if (compareItem != null && !processedClusterItems.contains(compareItem.pId)) { // 不重複才處理折扣邏輯
+                    val minSelectQuantity = minOf(i.selectedQuantity, compareItem.selectedQuantity ?: 0)
+                    sum += i.pChargebacks * minSelectQuantity
+                    permission = true
+
+                    // 創建 DiscountInfo 物件
+                    val discountInfo = DiscountInfo(
+                        discountDescription = i.pDescription,
+                        productId = i.pId,
+                        selectedQuantity = minSelectQuantity,
+                        totalDiscount = sum
+                    )
+
+                    // 將 DiscountInfo 加入到列表中
+                    discountInfoList.add(discountInfo)
+
+                    processedClusterItems.add(compareItem.pId)    // 紀錄走訪過的 compareId
+                }
+            }
+
+            if (permission) {    // 可加入的情況
+                // 創建 DiscountInfo 物件
+                val discountInfo = DiscountInfo(
+                    discountDescription = i.pDescription,
+                    productId = i.pId,
+                    selectedQuantity = i.selectedQuantity,
+                    totalDiscount = sum
+                )
+
+                // 將 DiscountInfo 加入到列表中
+                discountInfoList.add(discountInfo)
+            }
+
+            totalDiscount += sum
+
+            processedClusterItems.add(i.pId)    // 紀錄走訪過的 pId
         }
 
         return totalDiscount
     }
+
 
     //數量選擇
     private fun showQuantityInputDialog(callback: (Int) -> Unit) {
@@ -261,7 +306,6 @@ class HomeFragment : Fragment() {
 
         builder.show()
     }
-
 
     // 更新 GridView 的外觀
     private fun updateGridViewAppearance() {

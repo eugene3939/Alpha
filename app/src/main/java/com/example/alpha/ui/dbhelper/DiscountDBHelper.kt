@@ -24,9 +24,9 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
         db?.execSQL("CREATE TABLE IF NOT EXISTS DiscountTable (" //建立ProductTable
                 + "d_pId INTEGER,"          //商品id
                 + "d_description TEXT,"      //折扣描述
-                + "d_pDiscount DOUBLE,"     //折扣比例 ex:90%
-                + "d_Chargebacks INT,"      //折抵額度0表示沒有(不與折扣數量合併)，且優先於折扣比例 ex:折30元
-                + "d_pClusterItem TEXT);")  //組合對象(若無則為單項折扣)，沒有填0，若有則不是適用原有折數，以單向扣款為主
+                + "d_pDiscount DOUBLE,"     //折扣比例 ex:90% ->比例類型
+                + "d_Chargebacks INT,"      //折抵額度0表示沒有(不與折扣數量合併)，且優先於折扣比例 ex:折30元 ->ˊ折現類型
+                + "d_pClusterItem INT);")  //組合對象(若無則為單項折扣)，沒有填0，若有則不是適用原有折數，以單向扣款為主
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
