@@ -45,10 +45,11 @@ class DiscountProductAdapter(
         private val shopCartPrice: TextView = itemView.findViewById(R.id.txt_discountTotal)
 
         @SuppressLint("SetTextI18n")
-        fun bind(items: DiscountedProduct, discountText: String) {
+        fun bind(items: DiscountedProduct, discountText: Any) {
             shopCartName.text = items.pDescription
             shopCartNumber.text = "-${items.selectedQuantity} x "
-            shopCartPrice.text = discountText
+
+            shopCartPrice.text = discountText.toString()
         }
     }
 }

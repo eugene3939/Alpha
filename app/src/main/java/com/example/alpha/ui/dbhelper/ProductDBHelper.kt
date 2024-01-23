@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.alpha.R
+import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.ProductItem
 
 //這邊的ProductTable是指商品

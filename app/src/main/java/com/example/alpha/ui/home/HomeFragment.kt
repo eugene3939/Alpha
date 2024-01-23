@@ -21,6 +21,7 @@ import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
+import com.example.alpha.ui.myObject.DiscountCalculator
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
@@ -44,6 +45,12 @@ class HomeFragment : Fragment() {
     private lateinit var shoppingCart: ShopCart
     //購物車總價
     private var totalCartPrice = 0
+
+    //總折扣額度
+    var totalDiscount = 0
+
+    private lateinit var discountCalculator: DiscountCalculator
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +102,9 @@ class HomeFragment : Fragment() {
         //從ProductTable放資料到productList
         getProductTable()
 
+        // 初始化 DiscountCalculator
+        discountCalculator = DiscountCalculator(productList)
+
         //grTableData點擊事件(選擇商品、數量)
         binding.grTableData.setOnItemClickListener { _, _, position, _ ->
             val selectedProduct = filteredProductList[position]
@@ -110,16 +120,27 @@ class HomeFragment : Fragment() {
                     }
                     //如果有包含數量0的shoppingCart則是直接刪除
                     shoppingCart.selectedProducts.removeIf { it.selectedQuantity == 0 }
+
                     // 更新 GridView 的外觀和購物車內容
                     updateGridViewAppearance()
+
+                    //確認折扣
+                    val discountProducts = checkDiscount(shoppingCart.selectedProducts)
+
+                    //取得總折扣額度
+                    totalDiscount = getTotalDiscount(discountProducts)
+
+                    Log.d("顯示折扣: ","$totalDiscount")
 
                     //計算商品總價
                     var price = 0 //計算價格的區域變數(每次計算都先歸0)
                     for (i in shoppingCart.selectedProducts){   //計算總價要在這邊做，不要放到外面
                         price+= i.selectedQuantity*i.pPrice
                     }
+
                     totalCartPrice = price  //更新總價到全域變數
-                    binding.txtTotalPrice.text="總價: ${totalCartPrice}元"
+
+                    binding.txtTotalPrice.text="總價: $totalCartPrice - $totalDiscount = ${totalCartPrice-totalDiscount}元"
                 }
         }
 
@@ -171,7 +192,7 @@ class HomeFragment : Fragment() {
 
             //顯示總價
             val  shopTotalPrice = dialogView.findViewById<TextView>(R.id.buyChart_totalPrice)
-            shopTotalPrice.text = "總價: $totalCartPrice"
+            shopTotalPrice.text = "總價: $totalCartPrice - $totalDiscount = ${totalCartPrice-totalDiscount}"
 
             builder.setView(dialogView)
             builder.setTitle("購買項目")
@@ -191,6 +212,27 @@ class HomeFragment : Fragment() {
         }
 
         return root
+    }
+
+    //取得總折扣金額
+    private fun getTotalDiscount(discountProducts: List<DiscountedProduct>): Int {
+        var totalDiscount = 0   //總折扣金額
+
+        val dbHelper = ProductDBHelper(requireContext())
+
+        for (i in discountProducts){
+            //取得購物車項目中的商品價格
+            val singleItem = dbHelper.getProductsByCondition("pId", i.pId.toString())
+
+            Log.d("早上好","現在我有: ${singleItem[0].pPrice}")    //有點風險的搜尋方式，不過pId是primary key應該可接受
+            if (i.pDiscount>0.0){   //單一商品折扣
+                totalDiscount += (i.pDiscount * i.selectedQuantity * singleItem[0].pPrice).toInt()
+            };if(i.pChargebacks>0){ //組合商品優惠
+                totalDiscount+=i.pChargebacks*i.selectedQuantity
+            }
+        }
+
+        return totalDiscount
     }
 
     //數量選擇
