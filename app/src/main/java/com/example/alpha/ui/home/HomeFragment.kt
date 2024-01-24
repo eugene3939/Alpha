@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
+import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
@@ -75,8 +76,6 @@ class HomeFragment : Fragment() {
         //下拉式選單變更選擇的資料庫
         binding.spProductType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                //更新所在資料庫索引
-                //productTypeId = position
 
                 val selectedItem = parent?.getItemAtPosition(position)    //取得選擇的資料
                 //更新GridView顯示所在資料庫內容
@@ -162,13 +161,17 @@ class HomeFragment : Fragment() {
             updateGridView(productList,null,null)   //回復總表查詢
         }
 
-        //單一欄位查詢
-        binding.btnSearch.setOnClickListener { //先搜尋品名為主(數值型依狀況添加)
+        //單一欄位查詢 (能依據名稱、商品編號、商品貨號查詢)
+        binding.btnSearch.setOnClickListener {
             val searchText = binding.edtSearchRow.text.toString()
-            if (searchText!=""){
-                updateGridView(productList,"PName",searchText)
+            if (searchText.isNotBlank()) {
+                val dbHelper = ProductDBHelper(requireContext())
+                val filteredList = dbHelper.getProductsByKeyword(searchText)
+                updateGridView(filteredList, null, null)
+                dbHelper.close()
             }
         }
+
 
         //送出之前先讓用戶檢查購物車
         binding.btnDeal.setOnClickListener {
@@ -211,14 +214,9 @@ class HomeFragment : Fragment() {
 
     //取得總折扣金額
     private fun getTotalDiscount(discountProducts: List<DiscountedProduct>): Int {
-        val processedClusterItems = mutableSetOf<Int>()  // 用於追蹤已處理過的組合商品
         val dbHelper = ProductDBHelper(requireContext())
 
         var totalDiscount = 0
-
-        // 每次讀取都清除所有紀錄
-        processedClusterItems.clear() // 清洗所有折扣紀錄
-        discountInfoList.clear()    // 清洗瀏覽紀錄
 
         for (i in discountProducts) {
             // 取得購物車項目中的商品價格
@@ -248,19 +246,16 @@ class HomeFragment : Fragment() {
                     selectedQuantity = i.selectedQuantity,
                     totalDiscount = sum
                 )
-
                 // 將 DiscountInfo 加入到列表中
                 discountInfoList.add(discountInfo)
             }
-
-            totalDiscount += sum
-
-            processedClusterItems.add(i.pId)    // 紀錄走訪過的 pId
+            totalDiscount += sum    //加入單向折扣到總折扣
         }
+
+        //組合折扣
 
         return totalDiscount
     }
-
 
     //數量選擇
     private fun showQuantityInputDialog(callback: (Int) -> Unit) {
@@ -298,7 +293,7 @@ class HomeFragment : Fragment() {
 
     //查詢特定column
     private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
-//      如果 columnName 和 selectedItem 不為空，則篩選商品列表
+        //如果 columnName 和 selectedItem 不為空，則篩選商品列表
         filteredProductList  = if (columnName != null && selectedItem != null) {
             val selectedValue = selectedItem.toString()
             //productList.filter { getColumnValue(it, columnName) == selectedValue }    //從list撈篩選

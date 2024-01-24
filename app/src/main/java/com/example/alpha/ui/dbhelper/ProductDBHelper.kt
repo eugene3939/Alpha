@@ -99,4 +99,39 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
         return productList
     }
+
+    //依據商品id,商品名、商品貨號搜尋
+    @SuppressLint("Range")
+    fun getProductsByKeyword(keyword: String): List<ProductItem> {
+        val productList = mutableListOf<ProductItem>()
+        val db = readableDatabase
+
+        val query =
+            "SELECT * FROM ProductTable WHERE pName LIKE '%$keyword%' OR pId = '$keyword' OR pBarcode LIKE '%$keyword%'"
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex("pId"))
+                val imageResId = if (cursor.getInt(cursor.getColumnIndex("pPhoto")) == 0) {
+                    R.drawable.ic_hello // 預設照片位置
+                } else {
+                    cursor.getInt(cursor.getColumnIndex("pPhoto"))
+                }
+                val name = cursor.getString(cursor.getColumnIndex("pName"))
+                val category = cursor.getString(cursor.getColumnIndex("pType"))
+                val pBarcode = cursor.getString(cursor.getColumnIndex("pBarcode"))
+                val price = cursor.getInt(cursor.getColumnIndex("pPrice"))
+                val quantity = cursor.getInt(cursor.getColumnIndex("pNumber"))
+
+                val productItem = ProductItem(id, imageResId, name, category, pBarcode, price, quantity)
+                productList.add(productItem)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        return productList
+    }
 }

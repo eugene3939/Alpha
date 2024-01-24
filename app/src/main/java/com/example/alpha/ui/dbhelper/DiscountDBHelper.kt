@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 
-//這邊的DiscountTable是指商品折扣
+//這邊的DiscountTable是指單品折扣
 
 class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
     DiscountDBHelper.DATABASE_NAME,
