@@ -10,18 +10,12 @@ import com.example.alpha.R
 import com.example.alpha.ui.myObject.DiscountInfo
 
 class DiscountProductAdapter(private val dataList: List<DiscountInfo>) : BaseAdapter() {
-    private val filteredDataList = dataList.groupBy { it.discountDescription }
-        .values
-        .flatMap { group ->
-            group.minByOrNull { it.totalDiscount }?.let { listOf(it) } ?: emptyList()
-        }
-
     override fun getCount(): Int {
-        return filteredDataList.size
+        return dataList.size
     }
 
     override fun getItem(position: Int): Any {
-        return filteredDataList[position]
+        return dataList[position]
     }
 
     override fun getItemId(position: Int): Long {

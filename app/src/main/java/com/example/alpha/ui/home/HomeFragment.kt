@@ -227,37 +227,19 @@ class HomeFragment : Fragment() {
             var sum = 0   // 總折扣金額
             var permission = false // 確認是否能加入清單
 
+            //現金折扣
             if (i.pDiscount > 0.0) {   // 單一商品折扣
                 sum += (i.pDiscount * i.selectedQuantity * singleItem[0].pPrice).toInt()
                 permission = true
             }
 
-            if (i.pChargebacks > 0 && !processedClusterItems.contains(i.pId)) { // A+B優惠現金折價優惠(每次都檢查)
-                val compareId = i.pClusterItem?.toIntOrNull() ?: 0  // 對應的商品id，如果沒有就用0
-                Log.d("讀取id:　", "$compareId")
-
-                val compareItem = discountProducts.find { it.pId == compareId }
-
-                if (compareItem != null && !processedClusterItems.contains(compareItem.pId)) { // 不重複才處理折扣邏輯
-                    val minSelectQuantity = minOf(i.selectedQuantity, compareItem.selectedQuantity ?: 0)
-                    sum += i.pChargebacks * minSelectQuantity
-                    permission = true
-
-                    // 創建 DiscountInfo 物件
-                    val discountInfo = DiscountInfo(
-                        discountDescription = i.pDescription,
-                        productId = i.pId,
-                        selectedQuantity = minSelectQuantity,
-                        totalDiscount = sum
-                    )
-
-                    // 將 DiscountInfo 加入到列表中
-                    discountInfoList.add(discountInfo)
-
-                    processedClusterItems.add(compareItem.pId)    // 紀錄走訪過的 compareId
-                }
+            //現金折讓
+            if (i.pChargebacks> 0){ //單一商品折讓
+                sum = i.pChargebacks * i.selectedQuantity
+                permission = true
             }
 
+            //存在折扣，加入折扣資訊
             if (permission) {    // 可加入的情況
                 // 創建 DiscountInfo 物件
                 val discountInfo = DiscountInfo(

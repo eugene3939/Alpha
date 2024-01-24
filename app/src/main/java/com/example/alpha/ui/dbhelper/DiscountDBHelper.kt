@@ -13,8 +13,6 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
     DiscountDBHelper.DATABASE_NAME,
     null, DiscountDBHelper.DATABASE_VERSION){
 
-    var clickCount: Int = 0 // 新增一個屬性用於保存點擊次數
-
     companion object {
         private const val DATABASE_NAME = "DiscountTable.db"
         private const val DATABASE_VERSION = 1
@@ -25,8 +23,7 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
                 + "d_pId INTEGER,"          //商品id
                 + "d_description TEXT,"      //折扣描述
                 + "d_pDiscount DOUBLE,"     //折扣比例 ex:90% ->比例類型
-                + "d_Chargebacks INT,"      //折抵額度0表示沒有(不與折扣數量合併)，且優先於折扣比例 ex:折30元 ->ˊ折現類型
-                + "d_pClusterItem INT);")  //組合對象(若無則為單項折扣)，沒有填0，若有則不是適用原有折數，以單向扣款為主
+                + "d_Chargebacks INT);")  //現金折讓(不與折扣數量合併)，且優先於折扣比例 ex:折30元 ->ˊ折現類型
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -52,7 +49,6 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
                     pDescription = cursor.getString(cursor.getColumnIndex(("d_description"))),
                     pDiscount = cursor.getDouble(cursor.getColumnIndex("d_pDiscount")),
                     pChargebacks = cursor.getInt(cursor.getColumnIndex("d_Chargebacks")),
-                    pClusterItem = cursor.getString(cursor.getColumnIndex("d_pClusterItem")),
                     selectedQuantity = getSelectedQuantity(selectedProducts, cursor.getInt(cursor.getColumnIndex("d_pId")))
                 )
 
