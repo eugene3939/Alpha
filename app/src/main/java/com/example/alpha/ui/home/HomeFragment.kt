@@ -40,6 +40,8 @@ class HomeFragment : Fragment() {
     private var filteredProductList: List<ProductItem> = emptyList()
     //儲存折扣項目(描述、id、數量、價格)
     private val discountInfoList = mutableListOf<DiscountInfo>()
+    //儲存全部的組合商品
+    private var pairProductList: List<ProductItem> = emptyList()
 
     //儲存選擇的productItem位置
     private var selectedPositions = mutableSetOf<Int>()
@@ -79,10 +81,13 @@ class HomeFragment : Fragment() {
 
                 val selectedItem = parent?.getItemAtPosition(position)    //取得選擇的資料
                 //更新GridView顯示所在資料庫內容
-                if (selectedItem=="all"){   //查找所有資料
-                    updateGridView(productList,null,null)
-                }else{
-                    updateGridView(productList,"pType",selectedItem)
+                when (selectedItem) {
+                    "all" -> {   //查找所有資料
+                        updateGridView(productList,null,null)
+                    }
+                    else -> {
+                        updateGridView(productList,"pType",selectedItem)
+                    }
                 }
 
                 Log.d("目前所在的Table索引是", "索引: $selectedItem")
@@ -104,6 +109,8 @@ class HomeFragment : Fragment() {
             val selectedProduct = filteredProductList[position]
             val productName = selectedProduct.pName
             Toast.makeText(requireContext(), "商品名稱: $productName", Toast.LENGTH_SHORT).show()
+
+            discountInfoList.clear()    //每次讀取都清除之前的購物車折價清單
 
                 // 提示用戶輸入數量
                 showQuantityInputDialog { quantity ->
@@ -166,12 +173,11 @@ class HomeFragment : Fragment() {
             val searchText = binding.edtSearchRow.text.toString()
             if (searchText.isNotBlank()) {
                 val dbHelper = ProductDBHelper(requireContext())
-                val filteredList = dbHelper.getProductsByKeyword(searchText)
-                updateGridView(filteredList, null, null)
+                filteredProductList = dbHelper.getProductsByKeyword(searchText)
+                updateGridView(filteredProductList, null, null)
                 dbHelper.close()
             }
         }
-
 
         //送出之前先讓用戶檢查購物車
         binding.btnDeal.setOnClickListener {
@@ -248,6 +254,11 @@ class HomeFragment : Fragment() {
                 )
                 // 將 DiscountInfo 加入到列表中
                 discountInfoList.add(discountInfo)
+
+                // 判斷是否是組合商品，如果是，處理組合商品的邏輯
+                if (isPairDiscount(i.pId)) {
+                    handlePairDiscount(i.pId)
+                }
             }
             totalDiscount += sum    //加入單向折扣到總折扣
         }
@@ -317,6 +328,73 @@ class HomeFragment : Fragment() {
         productList = databaseHelper.getAllProducts()   //取得product table items
 
         databaseHelper.close()
+    }
+
+    // 判斷是否是組合商品
+    private fun isPairDiscount(productId: Int): Boolean {
+        val pairDiscountDbHelper = PairDiscountDBHelper(requireContext())
+        val db = pairDiscountDbHelper.readableDatabase
+        val query = "SELECT * FROM PairDiscountTable WHERE d_pId = $productId"
+        val cursor = db.rawQuery(query, null)
+        val result = cursor.moveToFirst()
+        cursor.close()
+        db.close()
+        return result
+    }
+
+    // 處理組合商品的邏輯
+    @SuppressLint("Range")
+    private fun handlePairDiscount(pairDiscountId: Int) {
+        val pairDiscountDbHelper = PairDiscountDBHelper(requireContext())
+        val db = pairDiscountDbHelper.readableDatabase
+
+        // 根據 pairDiscountId 查詢 PairDiscountTable 取得相關資訊
+        val query = "SELECT * FROM PairDiscountTable WHERE d_pId = $pairDiscountId"
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                // 取得組合商品的成員和數量
+                val itemSet = cursor.getString(cursor.getColumnIndex("itemSet"))
+                val number = cursor.getString(cursor.getColumnIndex("number"))
+
+                // 分割成員和數量
+                val items = itemSet.split(",")
+                val quantities = number.split(",")
+
+                // 逐一處理組合商品中的每個成員
+                for (j in items.indices) {
+                    val memberName = items[j]
+                    val memberId = memberName.toInt()  // 將 memberName 轉換為 pId
+                    val memberQuantity = quantities[j].toInt()
+
+                    // 根據 memberId 取得商品名稱
+                    val productName = getProductDisplayName(memberId)
+
+                    // 在這裡進行相應的處理，例如將成員和數量加入購物車 (這邊暫時先不處理)
+                    // shoppingCart.addProduct(memberId, memberQuantity)
+
+                    // 設定成員的折扣金額為 0
+                    val memberDiscountInfo = DiscountInfo(
+                        discountDescription = "組合商品: $productName",
+                        productId = memberId,
+                        selectedQuantity = memberQuantity,
+                        totalDiscount = 0
+                    )
+                    discountInfoList.add(memberDiscountInfo)
+                }
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+    }
+
+    // 根據 pId 取得商品名稱的方法
+    private fun getProductDisplayName(pId: Int): String {
+        val dbHelper = ProductDBHelper(requireContext())
+        val product = dbHelper.getProductsByCondition("pId", pId.toString()).firstOrNull()
+        return product?.pName ?: "Unknown Product"
     }
 
     //確認商品折扣，並顯示在listView

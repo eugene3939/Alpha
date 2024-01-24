@@ -9,7 +9,7 @@
     <string name="login_pas_hint">密碼</string>
     <string name="txt_login">登入</string>
     <string name="txt_sent">確定</string>
-    <string name="txt_table">輸入商品名稱</string>
+    <string name="txt_table">輸入商品編號、貨號、名稱</string>
     <string name="txt_clear">清除</string>
     <string name="txt_default">預設</string>
     <string name="number">1</string>
@@ -50,10 +50,12 @@
 
     <!--商品分類-->
     <string-array name="productType">
-        <item>fruit</item>
-        <item>food</item>
-        <item>other</item>
-        <item>all</item>
+        <item>水果</item>
+        <item>食物</item>
+        <item>飲料</item>
+        <item>其他</item>
+        <item>組合商品</item>
+        <item>全部</item>
     </string-array>
 
 </resources>

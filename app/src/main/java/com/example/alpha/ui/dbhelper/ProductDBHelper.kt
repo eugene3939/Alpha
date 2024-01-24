@@ -24,8 +24,6 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 + "pPrice INTEGER,"           //商品價錢
                 + "pNumber INTEGER,"          //商品數量
                 + "pPhoto INTEGER);")         //商品圖片
-
-//        Log.d("進入table", "link start")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

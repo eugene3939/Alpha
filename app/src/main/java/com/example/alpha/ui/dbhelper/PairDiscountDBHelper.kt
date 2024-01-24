@@ -1,8 +1,11 @@
 package com.example.alpha.ui.dbhelper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.alpha.R
+import com.example.alpha.ui.myObject.ProductItem
 
 //促銷折扣
 class PairDiscountDBHelper(context: Context): SQLiteOpenHelper(context,
@@ -16,10 +19,11 @@ class PairDiscountDBHelper(context: Context): SQLiteOpenHelper(context,
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE IF NOT EXISTS PairDiscountTable (" //建立PairDiscountTable
-                + "pd_pId INTEGER,"            //促銷編號
-                + "pd_Description TEXT,"       //促銷說明
-                + "pd_Chargebacks INTEGER,"       //折讓金額
-                + "pd_clusterItems TEXT);")     //組合項目(sqlite中不提供array或list的欄位，所以這邊使用TEXT)
+                + "d_pId INTEGER,"     //折扣編號
+                + "itemSet TEXT,"      //包含產品{pId:A, pId:B} 表示對應的產品Id
+                + "number TEXT,"       //包含數量{1,2} 表示需要(1A+2B)
+                + "total INT);")       //總折價金額(sqlite中不提供array或list的欄位，所以這邊使用TEXT)
+        //之後可以依照數量進行拆分
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

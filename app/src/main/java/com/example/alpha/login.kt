@@ -104,10 +104,13 @@ class login : AppCompatActivity() {
     private fun createProductDB() {
         val dbHelper = ProductDBHelper(this)
         val defaultProductData = listOf(
-            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(1,'Apple', 'fruit','SBC', 50, 100, 0);",
-            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(2,'Pineapple', 'fruit','123', 100, 80, 0);",
-            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(3,'Snapple', 'other','A12', 200, 60, 0);",
-            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(17,'Cocoa', 'other','ABC', 500, 80, 0);"
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(1,'Apple', '水果','SBC', 50, 100, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(2,'Pineapple', '水果','123', 100, 80, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(3,'Snapple', '其他','A12', 200, 60, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(17,'可可亞', '食物','ABC', 500, 80, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(18,'西瓜', '飲料','RCT', 230, 60, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(19,'綠茶', '飲料','CCC', 80, 25, 0);",
+            "INSERT INTO ProductTable(pId,pName, pType,pBarcode, pPrice, pNumber,pPhoto) VALUES(20,'Apple set', '組合商品','RTX', 300, 200, 0);"
         )
         createDatabase(dbHelper, "ProductTable", defaultProductData)
     }
@@ -117,18 +120,19 @@ class login : AppCompatActivity() {
         val defaultDiscount = listOf(
             "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks) VALUES(1,'蘋果9折', 0.1 , 0);",//即商品編號1號打九折
             "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks) VALUES(2,'單品折30', 0, 30);",//即單品折讓30元
-            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks) VALUES(3,'單品折10', 0, 10);"//即單品折讓10元
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks) VALUES(3,'單品折10', 0, 10);",//即單品折讓10元
+            "INSERT INTO DiscountTable(d_pId, d_description, d_pDiscount, d_Chargebacks) VALUES(20,'組合商品折60', 0, 60);"//即單品折讓10元 apple+Pineapple+Snapple折50元
         )
         createDatabase(dbHelper, "DiscountTable", defaultDiscount)
     }
 
     //創建組合商品的Table
-    private fun createPairDiscountDB() {    //促銷
-        // 使用 PairDiscountDBHelper 插入一個買 id=1,2,3 就折 30 元的物件
+    private fun createPairDiscountDB() {//組合商品
+        // 使用 PairDiscountDBHelper 插入一個買 id=1,2,3 就折 50 元的物件
 
         val dbHelper = PairDiscountDBHelper(this)
         val defaultPairDiscountData = listOf(
-            "INSERT INTO PairDiscountTable(pd_pId, pd_Description, pd_Chargebacks, pd_clusterItems) VALUES(1,'A+B+C折30',30,'1,2,3');"
+            "INSERT INTO PairDiscountTable(d_pId, itemSet, number, total) VALUES(20,'1,2,3','1,2,3',60);"
         )
         createDatabase(dbHelper, "PairDiscountTable", defaultPairDiscountData)
     }
