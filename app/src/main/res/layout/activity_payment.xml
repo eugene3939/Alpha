@@ -7,58 +7,78 @@
     android:layout_height="match_parent"
     tools:context=".ui.Payment">
 
-    <!--支付方式(電子支付)-->
     <LinearLayout
-        android:id="@+id/Layout_electricPay"
+        android:id="@+id/layoutPaymentWay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:orientation="horizontal">
 
-        <!--街口支付-->
+        <!--現金-->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/txt_street">
-        </Button>
+            android:text="@string/txt_cash"
+            android:layout_weight="1"/>
 
-        <!--line pay-->
+        <!--信用卡-->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/txt_linepay">
-        </Button>
+            android:layout_marginStart="5dp"
+            android:text="@string/txt_cashCard"
+            android:layout_weight="1"/>
 
-        <!--全支付-->
+        <!--無連線支付(電子支付)-->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/txt_allPay">
-        </Button>
+            android:layout_marginStart="5dp"
+            android:text="@string/txt_electricPayment"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
-        <!--愛心卡-->
-        <Button
+    <!--付款介面-->
+    <LinearLayout
+        android:id="@+id/layout_calculator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutPaymentWay"
+        android:orientation="horizontal">
+
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/txt_love">
-        </Button>
+            android:layout_weight="8"
+            android:hint="@string/txt_please_enter_payment"
+            android:textSize="25sp"
+            android:autofillHints="0"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="25sp"
+            android:text="@string/txt_clear"/>
 
     </LinearLayout>
 
-    <!--優惠卷-->
+
+    <!--重新選擇支付方式-->
+    <!--付款金額滿足前不可點擊-->
     <Button
-        android:layout_alignStart="@+id/Layout_electricPay"
+        android:id="@+id/btn_confirmPayment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Layout_electricPay"
-        android:text="@string/txt_coupon"/>
+        android:layout_below="@id/layout_calculator"
+        android:textSize="25sp"
+        android:text="@string/txt_confirmPayment"
+        android:visibility="visible"
+        android:enabled="false"/>
 
-    <!--現金-->
-
-    <!--信用卡-->
 
     <!--上一頁-->
     <Button

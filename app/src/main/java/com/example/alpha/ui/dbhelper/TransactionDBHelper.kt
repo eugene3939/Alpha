@@ -13,9 +13,9 @@ class TransactionDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_N
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE IF NOT EXISTS TransactionTable (" //建立ProductTable
-                + "tId INTEGER PRIMARY KEY AUTOINCREMENT,"  //交易id
-                + "tDate DATE,"     //交易日期
-                + "tDescription TEXT);")  //交易描述
+                + "tId INTEGER PRIMARY KEY AUTOINCREMENT,"  //交易id (自動增加)
+                + "tDate DATE,"                             //交易日期
+                + "tDescription TEXT);")                    //交易描述
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
