@@ -1,8 +1,9 @@
 package com.example.alpha.ui.myObject
 
 import android.util.Log
+import java.io.Serializable
 
-class ShopCart {
+class ShopCart : Serializable {
     val selectedProducts: MutableList<ProductItem> = mutableListOf()
 
     fun addProduct(product: ProductItem, quantity: Int) {

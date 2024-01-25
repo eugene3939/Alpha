@@ -23,7 +23,6 @@ class PairDiscountDBHelper(context: Context): SQLiteOpenHelper(context,
                 + "itemSet TEXT,"      //包含產品{pId:A, pId:B} 表示對應的產品Id
                 + "number TEXT,"       //包含數量{1,2} 表示需要(1A+2B)
                 + "total INT);")       //總折價金額(sqlite中不提供array或list的欄位，所以這邊使用TEXT)
-        //之後可以依照數量進行拆分
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

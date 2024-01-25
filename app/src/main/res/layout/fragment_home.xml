@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
 
+
     <!-- 搜尋框 -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,15 +49,15 @@
     <GridView
         android:id="@+id/gr_tableData"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="500dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <!-- 購物車 -->
-    <ListView
-        android:id="@+id/ls_buyChart"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+<!--    &lt;!&ndash; 購物車 &ndash;&gt;-->
+<!--    <ListView-->
+<!--        android:id="@+id/ls_buyChart"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>-->
 
     <LinearLayout
         android:layout_width="match_parent"

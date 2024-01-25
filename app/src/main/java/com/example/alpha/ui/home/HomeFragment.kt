@@ -3,6 +3,7 @@ package com.example.alpha.ui.home
 import ProductItemAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,8 +16,12 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import com.example.alpha.MainActivity
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
+import com.example.alpha.ui.Payment
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
@@ -26,6 +31,7 @@ import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.DiscountedProduct
 import com.example.alpha.ui.myObject.ProductItem
 import com.example.alpha.ui.myObject.ShopCart
+import java.io.Serializable
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -40,8 +46,6 @@ class HomeFragment : Fragment() {
     private var filteredProductList: List<ProductItem> = emptyList()
     //儲存折扣項目(描述、id、數量、價格)
     private val discountInfoList = mutableListOf<DiscountInfo>()
-    //儲存全部的組合商品
-    private var pairProductList: List<ProductItem> = emptyList()
 
     //儲存選擇的productItem位置
     private var selectedPositions = mutableSetOf<Int>()
@@ -52,7 +56,7 @@ class HomeFragment : Fragment() {
     private var totalCartPrice = 0
 
     //總折扣額度
-    var totalDiscount = 0
+    private var totalDiscount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +79,7 @@ class HomeFragment : Fragment() {
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1,productTypes)
         binding.spProductType.adapter = spinnerAdapter
 
-        //下拉式選單變更選擇的資料庫
+        //下拉式選單變更選擇的Table
         binding.spProductType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
@@ -83,7 +87,7 @@ class HomeFragment : Fragment() {
                 //更新GridView顯示所在資料庫內容
                 when (selectedItem) {
                     "all" -> {   //查找所有資料
-                        updateGridView(productList,null,null)
+                        updateGridView(productList,null,null)   //回復總表查詢
                     }
                     else -> {
                         updateGridView(productList,"pType",selectedItem)
@@ -205,6 +209,20 @@ class HomeFragment : Fragment() {
             builder.setPositiveButton("確定") { _, _ ->
                 //送出商品
                 Toast.makeText(requireContext(),"已送出，前往付款頁面",Toast.LENGTH_SHORT).show()
+
+                //送出用戶選擇的商品資料到付款頁面
+                val intent = Intent(requireContext(), Payment::class.java)
+                intent.putExtra("shoppingCart",shoppingCart)
+                intent.putExtra("discountInfoList", discountInfoList as Serializable)
+                startActivity(intent)
+
+                //要傳遞購物清單、折扣資訊
+//                for (i in shoppingCart.selectedProducts){
+//                    Log.d("你好","$i")
+//                }
+//                for (j in discountInfoList){
+//                    Log.d("購物清單","$j")
+//                }
             }
             builder.setNegativeButton("取消") { dialog, _ ->
                 // 用戶點擊取消
@@ -268,7 +286,7 @@ class HomeFragment : Fragment() {
         return totalDiscount
     }
 
-    //數量選擇
+    //在Gird View選擇商品數量
     private fun showQuantityInputDialog(callback: (Int) -> Unit) {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = LayoutInflater.from(requireContext())
@@ -295,14 +313,14 @@ class HomeFragment : Fragment() {
         builder.show()
     }
 
-    // 更新 GridView 的外觀
+    // 更新 GridView 的外觀(購物車換色)
     private fun updateGridViewAppearance() {
         // 更新商品列表的 GridView
         val adapter = ProductItemAdapter(filteredProductList,shoppingCart)
         binding.grTableData.adapter = adapter
     }
 
-    //查詢特定column
+    //查詢特定column並顯示到GridView
     private fun updateGridView(productList: List<ProductItem>, columnName: String?, selectedItem: Any?) {
         //如果 columnName 和 selectedItem 不為空，則篩選商品列表
         filteredProductList  = if (columnName != null && selectedItem != null) {
@@ -390,7 +408,7 @@ class HomeFragment : Fragment() {
         db.close()
     }
 
-    // 根據 pId 取得商品名稱的方法
+    // 根據 pId 取得商品名稱
     private fun getProductDisplayName(pId: Int): String {
         val dbHelper = ProductDBHelper(requireContext())
         val product = dbHelper.getProductsByCondition("pId", pId.toString()).firstOrNull()

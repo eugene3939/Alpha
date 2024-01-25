@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Alpha">
         <activity
+            android:name=".ui.Payment"
+            android:exported="false" />
+        <activity
             android:name=".login"
             android:exported="true"
             android:theme="@style/Theme.Design.NoActionBar">
