@@ -95,8 +95,8 @@ class login : AppCompatActivity() {
     private fun createUserDB() {
         val dbHelper = UserDBHelper(this)
         val defaultUserData = listOf(
-            "INSERT INTO UserTable(uName, account, password) VALUES('Eugene', 1, 1);",
-            "INSERT INTO UserTable(uName, account, password) VALUES('Oscar', 3, 3);"
+            "INSERT INTO UserTable(uId, uName, account, password) VALUES(1,'Eugene', 1, 1);",
+            "INSERT INTO UserTable(uId, uName, account, password) VALUES(2,'Oscar', 3, 3);"
         )
         createDatabase(dbHelper, "UserTable", defaultUserData)
     }
