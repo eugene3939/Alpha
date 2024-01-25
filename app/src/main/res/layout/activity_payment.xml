@@ -7,6 +7,60 @@
     android:layout_height="match_parent"
     tools:context=".ui.Payment">
 
+    <!--支付方式(電子支付)-->
+    <LinearLayout
+        android:id="@+id/Layout_electricPay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!--街口支付-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/txt_street">
+        </Button>
+
+        <!--line pay-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/txt_linepay">
+        </Button>
+
+        <!--全支付-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/txt_allPay">
+        </Button>
+
+        <!--愛心卡-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/txt_love">
+        </Button>
+
+    </LinearLayout>
+
+    <!--優惠卷-->
+    <Button
+        android:layout_alignStart="@+id/Layout_electricPay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Layout_electricPay"
+        android:text="@string/txt_coupon"/>
+
+    <!--現金-->
+
+    <!--信用卡-->
+
+    <!--上一頁-->
     <Button
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import com.example.alpha.databinding.ActivityPaymentBinding
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.ShopCart
 
+//付款頁面
 class Payment : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
 
