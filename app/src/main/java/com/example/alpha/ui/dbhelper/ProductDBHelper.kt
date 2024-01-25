@@ -17,7 +17,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
     override fun onCreate(db: SQLiteDatabase) {
         // 在這裡建立資料庫表格等相關邏輯
         db.execSQL("CREATE TABLE IF NOT EXISTS ProductTable (" //建立ProductTable
-                + "pId INTEGER PRIMARY KEY,"  //商品id
+                + "pId TEXT PRIMARY KEY,"  //商品id
                 + "pName TEXT,"               //商品名稱
                 + "pType TEXT,"               //商品分類
                 + "pBarcode TEXT,"            //商品條碼
@@ -41,7 +41,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getInt(cursor.getColumnIndex("pId"))
+                val id = cursor.getString(cursor.getColumnIndex("pId"))
                 val imageResId = if (cursor.getInt(cursor.getColumnIndex("pPhoto")) == 0) {
                     R.drawable.ic_hello // 預設照片位置
                 } else {
@@ -75,7 +75,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getInt(cursor.getColumnIndex("pId"))
+                val id = cursor.getString(cursor.getColumnIndex("pId"))
                 val imageResId = if (cursor.getInt(cursor.getColumnIndex("pPhoto")) == 0) {
                     R.drawable.ic_hello // 預設照片位置
                 } else {
@@ -110,7 +110,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getInt(cursor.getColumnIndex("pId"))
+                val id = cursor.getString(cursor.getColumnIndex("pId"))
                 val imageResId = if (cursor.getInt(cursor.getColumnIndex("pPhoto")) == 0) {
                     R.drawable.ic_hello // 預設照片位置
                 } else {

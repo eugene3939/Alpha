@@ -14,7 +14,7 @@
             android:name=".ui.Payment"
             android:exported="false" />
         <activity
-            android:name=".login"
+            android:name=".Login"
             android:exported="true"
             android:theme="@style/Theme.Design.NoActionBar">
             <intent-filter>

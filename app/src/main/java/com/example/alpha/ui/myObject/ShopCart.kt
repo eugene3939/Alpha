@@ -26,7 +26,7 @@ class ShopCart : Serializable {
         selectedProducts.clear()
     }
 
-    private fun findProductById(products: List<ProductItem>, productId: Int): ProductItem? {
+    private fun findProductById(products: List<ProductItem>, productId: String): ProductItem? {
         return products.find { it.pId == productId }
     }
 }

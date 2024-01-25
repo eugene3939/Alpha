@@ -16,9 +16,6 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import com.example.alpha.MainActivity
 import com.example.alpha.databinding.FragmentHomeBinding
 import com.example.alpha.R
 import com.example.alpha.ui.Payment
@@ -349,7 +346,7 @@ class HomeFragment : Fragment() {
     }
 
     // 判斷是否是組合商品
-    private fun isPairDiscount(productId: Int): Boolean {
+    private fun isPairDiscount(productId: String): Boolean {
         val pairDiscountDbHelper = PairDiscountDBHelper(requireContext())
         val db = pairDiscountDbHelper.readableDatabase
         val query = "SELECT * FROM PairDiscountTable WHERE d_pId = $productId"
@@ -362,7 +359,7 @@ class HomeFragment : Fragment() {
 
     // 處理組合商品的邏輯
     @SuppressLint("Range")
-    private fun handlePairDiscount(pairDiscountId: Int) {
+    private fun handlePairDiscount(pairDiscountId: String) {
         val pairDiscountDbHelper = PairDiscountDBHelper(requireContext())
         val db = pairDiscountDbHelper.readableDatabase
 
@@ -383,19 +380,20 @@ class HomeFragment : Fragment() {
                 // 逐一處理組合商品中的每個成員
                 for (j in items.indices) {
                     val memberName = items[j]
-                    val memberId = memberName.toInt()  // 將 memberName 轉換為 pId
                     val memberQuantity = quantities[j].toInt()
 
+                    Log.d("成員名稱", memberName)
+
                     // 根據 memberId 取得商品名稱
-                    val productName = getProductDisplayName(memberId)
+                    val productName = getProductDisplayName(memberName)
 
                     // 在這裡進行相應的處理，例如將成員和數量加入購物車 (這邊暫時先不處理)
-                    // shoppingCart.addProduct(memberId, memberQuantity)
+                    // shoppingCart.addProduct(memberName, memberQuantity)
 
                     // 設定成員的折扣金額為 0
                     val memberDiscountInfo = DiscountInfo(
                         discountDescription = "組合商品: $productName",
-                        productId = memberId,
+                        productId = memberName,
                         selectedQuantity = memberQuantity,
                         totalDiscount = 0
                     )
@@ -408,8 +406,10 @@ class HomeFragment : Fragment() {
         db.close()
     }
 
+
+
     // 根據 pId 取得商品名稱
-    private fun getProductDisplayName(pId: Int): String {
+    private fun getProductDisplayName(pId: String): String {
         val dbHelper = ProductDBHelper(requireContext())
         val product = dbHelper.getProductsByCondition("pId", pId.toString()).firstOrNull()
         return product?.pName ?: "Unknown Product"

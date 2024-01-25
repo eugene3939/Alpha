@@ -20,7 +20,7 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE IF NOT EXISTS DiscountTable (" //建立ProductTable
-                + "d_pId INTEGER,"          //商品id
+                + "d_pId TEXT,"          //商品id
                 + "d_description TEXT,"      //折扣描述
                 + "d_pDiscount DOUBLE,"     //折扣比例 ex:90% ->比例類型
                 + "d_Chargebacks INT);")  //現金折讓(不與折扣數量合併)，且優先於折扣比例 ex:折30元 ->ˊ折現類型
@@ -45,11 +45,11 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
             do {
                 // 使用 DiscountedProduct 的建構子來建立物件
                 val discountedProduct = DiscountedProduct(
-                    pId = cursor.getInt(cursor.getColumnIndex("d_pId")),
+                    pId = cursor.getString(cursor.getColumnIndex("d_pId")),
                     pDescription = cursor.getString(cursor.getColumnIndex(("d_description"))),
                     pDiscount = cursor.getDouble(cursor.getColumnIndex("d_pDiscount")),
                     pChargebacks = cursor.getInt(cursor.getColumnIndex("d_Chargebacks")),
-                    selectedQuantity = getSelectedQuantity(selectedProducts, cursor.getInt(cursor.getColumnIndex("d_pId")))
+                    selectedQuantity = getSelectedQuantity(selectedProducts, cursor.getString(cursor.getColumnIndex("d_pId")))
                 )
 
                 productList.add(discountedProduct)
@@ -63,7 +63,7 @@ class DiscountDBHelper(context: Context): SQLiteOpenHelper(context,
     }
 
     // 輔助函數，從購物車中獲取特定商品的選擇數量
-    private fun getSelectedQuantity(selectedProducts: List<ProductItem>, productId: Int): Int {
+    private fun getSelectedQuantity(selectedProducts: List<ProductItem>, productId: String): Int {
         val product = selectedProducts.find { it.pId == productId }
         return product?.selectedQuantity ?: 0
     }

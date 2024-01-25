@@ -15,7 +15,7 @@ import com.example.alpha.ui.dbhelper.ProductDBHelper
 import com.example.alpha.ui.dbhelper.TransactionDBHelper
 import com.example.alpha.ui.dbhelper.UserDBHelper
 
-class login : AppCompatActivity() {
+class Login : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var dbrw: SQLiteDatabase
