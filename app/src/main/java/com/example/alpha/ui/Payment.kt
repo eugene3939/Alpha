@@ -1,5 +1,6 @@
 package com.example.alpha.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,6 +18,9 @@ import com.example.alpha.ui.myObject.ShopCart
 //付款頁面
 class Payment : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
+
+    private var originTotalPrice = 0    //購物車取得總價
+    private var discount = 0            //購物車取得折扣
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +44,11 @@ class Payment : AppCompatActivity() {
             // 在這裡處理 shoppingCart 和 discountInfoList
         } else {
             // 如果無法檢索到或轉換 Serializable 物件，進行錯誤處理
-            Log.e("PaymentActivity", "Failed to retrieve shoppingCart or discountInfoList from intent.")
+            Log.e("檢索錯誤", "無法從intent取得shoppingCart和discountInfoList物件")
         }
+
+        //取得折扣額和總價
+        getDiscountAndTotalPrice(shoppingCart, discountInfoList)
 
         //顯示折扣和明細內容
         showBuyCartInformation(shoppingCart, discountInfoList)
@@ -62,7 +69,7 @@ class Payment : AppCompatActivity() {
                 val text = binding.edtCash.text.toString()
                 if (text.isNotEmpty()) {
                     val value = text.toIntOrNull()
-                    binding.btnConfirmPayment.isEnabled = value != null && value > 300  //只有大於300元才顯示按鈕(測試)
+                    binding.btnConfirmPayment.isEnabled = value != null && value >= originTotalPrice-discount  //只有大於總金額-折扣，才顯示按鈕(測試)
                 } else {
                     binding.btnConfirmPayment.isEnabled = false
                 }
@@ -80,6 +87,25 @@ class Payment : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    //取得折扣額和總價
+    @SuppressLint("SetTextI18n")
+    private fun getDiscountAndTotalPrice(shoppingCart: ShopCart?, discountInfoList: ArrayList<DiscountInfo>?) {
+        //取得購物車總價
+        if (shoppingCart != null) {
+            for (i in shoppingCart.selectedProducts){
+                originTotalPrice+=i.pPrice*i.selectedQuantity
+            }
+        }
+        //取得折扣總額
+        if (discountInfoList != null) {
+            for (j in discountInfoList){
+                discount+=j.totalDiscount
+            }
+        }
+
+        binding.txtTotalPrice.text = "總價: ${originTotalPrice - discount}"
     }
 
     //顯示折扣和明細內容
