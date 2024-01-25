@@ -48,6 +48,7 @@
         android:orientation="horizontal">
 
         <EditText
+            android:id="@+id/edt_cash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="8"
@@ -74,13 +75,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/layout_calculator"
+        android:layout_centerHorizontal="true"
         android:textSize="25sp"
         android:text="@string/txt_confirmPayment"
         android:visibility="visible"
         android:enabled="false"/>
 
+    <!--購買明細-->
+    <ListView
+        android:id="@+id/ls_buyCart"
+        android:layout_below="@id/btn_confirmPayment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-    <!--上一頁-->
+    <!--折扣明細-->
+    <ListView
+        android:id="@+id/ls_discount"
+        android:layout_below="@+id/ls_buyCart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!--交易取消-->
     <Button
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"
@@ -88,6 +103,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:textSize="30sp"
-        android:text="@string/txt_back"/>
+        android:text="@string/txt_cancel"/>
 
 </RelativeLayout>

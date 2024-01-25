@@ -28,6 +28,7 @@
     <string name="txt_electricPayment">電子支付</string>
     <string name="txt_please_enter_payment">請輸入金額</string>
     <string name="txt_confirmPayment">確認付款</string>
+    <string name="txt_cancel">交易取消</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>

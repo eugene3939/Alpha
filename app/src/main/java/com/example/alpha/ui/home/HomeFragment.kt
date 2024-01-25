@@ -204,14 +204,19 @@ class HomeFragment : Fragment() {
             builder.setTitle("購買項目")
 
             builder.setPositiveButton("確定") { _, _ ->
-                //送出商品
-                Toast.makeText(requireContext(),"已送出，前往付款頁面",Toast.LENGTH_SHORT).show()
+                //確認是否購物車為空，為空則跳出通知
+                if (shoppingCart.selectedProducts.size==0){
+                    Toast.makeText(requireContext(),"你沒有選擇商品喔",Toast.LENGTH_SHORT).show()
+                }else{
+                    //送出商品
+                    Toast.makeText(requireContext(),"前往付款頁面",Toast.LENGTH_SHORT).show()
 
-                //送出用戶選擇的商品資料到付款頁面
-                val intent = Intent(requireContext(), Payment::class.java)
-                intent.putExtra("shoppingCart",shoppingCart)
-                intent.putExtra("discountInfoList", discountInfoList as Serializable)
-                startActivity(intent)
+                    //送出用戶選擇的商品資料到付款頁面
+                    val intent = Intent(requireContext(), Payment::class.java)
+                    intent.putExtra("shoppingCart",shoppingCart)
+                    intent.putExtra("discountInfoList", discountInfoList as Serializable)
+                    startActivity(intent)
+                }
 
                 //要傳遞購物清單、折扣資訊
 //                for (i in shoppingCart.selectedProducts){
