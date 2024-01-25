@@ -4,15 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.alpha.MainActivity
-import com.example.alpha.R
-import com.example.alpha.databinding.ActivityMainBinding
 import com.example.alpha.databinding.ActivityPaymentBinding
-import com.example.alpha.databinding.FragmentHomeBinding
-import com.example.alpha.ui.home.HomeFragment
-import com.example.alpha.ui.home.HomeViewModel
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.ShopCart
 

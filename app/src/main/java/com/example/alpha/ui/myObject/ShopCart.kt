@@ -1,6 +1,5 @@
 package com.example.alpha.ui.myObject
 
-import android.util.Log
 import java.io.Serializable
 
 class ShopCart : Serializable {
@@ -27,7 +26,7 @@ class ShopCart : Serializable {
         selectedProducts.clear()
     }
 
-    fun findProductById(products: List<ProductItem>, productId: Int): ProductItem? {
+    private fun findProductById(products: List<ProductItem>, productId: Int): ProductItem? {
         return products.find { it.pId == productId }
     }
 }
