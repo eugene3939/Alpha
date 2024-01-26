@@ -1,30 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!--購物車項目和單價-->
-    <ListView
-        android:id="@+id/buyChart_content"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="600dp">
-    </ListView>
-
-    <!--購物車折扣-->
-    <ListView
-        android:id="@+id/buyChart_discount"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"/>
+        android:layout_above="@+id/buyChart_totalPrice"
+        android:orientation="vertical">
+
+        <!--購物車項目和單價-->
+        <ListView
+            android:id="@+id/buyChart_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ListView>
+
+        <!--購物車折扣-->
+        <ListView
+            android:id="@+id/buyChart_discount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ListView>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/buyChart_totalPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:text="@string/txt_totalPrice"
         android:textSize="30sp"
         android:textStyle="bold"/>
 
-</LinearLayout>
+</RelativeLayout>

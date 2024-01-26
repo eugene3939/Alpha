@@ -411,8 +411,6 @@ class HomeFragment : Fragment() {
         db.close()
     }
 
-
-
     // 根據 pId 取得商品名稱
     private fun getProductDisplayName(pId: String): String {
         val dbHelper = ProductDBHelper(requireContext())
