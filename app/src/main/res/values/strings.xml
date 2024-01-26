@@ -29,6 +29,8 @@
     <string name="txt_please_enter_payment">請輸入金額</string>
     <string name="txt_confirmPayment">確認付款</string>
     <string name="txt_cancel">交易取消</string>
+    <string name="txt_payment">支付</string>
+    <string name="txt_change">找零</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>
@@ -68,7 +70,13 @@
         <item>飲料</item>
         <item>其他</item>
         <item>組合商品</item>
-        <item>全部</item>
+    </string-array>
+
+    <!--支付類別-->
+    <string-array name="paymentType">
+        <item>現金</item>
+        <item>信用卡</item>
+        <item>一卡通</item>
     </string-array>
 
 </resources>

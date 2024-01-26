@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/darkBlue"
         android:text="@string/txt_default"/>
 
     <!--購物車商品數量-->
@@ -25,9 +24,7 @@
         android:layout_height="wrap_content"
         android:text="@string/number"
         android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@color/darkBlue"/>
-
+        android:textStyle="bold"/>
     <!--商品單價-->
     <TextView
         android:layout_marginStart="10dp"
@@ -46,6 +43,5 @@
         android:layout_height="wrap_content"
         android:text="@string/number"
         android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@color/purple_500"/>
+        android:textStyle="bold"/>
 </LinearLayout>

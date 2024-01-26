@@ -82,14 +82,7 @@ class HomeFragment : Fragment() {
 
                 val selectedItem = parent?.getItemAtPosition(position)    //取得選擇的資料
                 //更新GridView顯示所在資料庫內容
-                when (selectedItem) {
-                    "all" -> {   //查找所有資料
-                        updateGridView(productList,null,null)   //回復總表查詢
-                    }
-                    else -> {
-                        updateGridView(productList,"pType",selectedItem)
-                    }
-                }
+                if (selectedItem!=null) updateGridView(productList,"pType",selectedItem)    //依照pType查詢
 
                 Log.d("目前所在的Table索引是", "索引: $selectedItem")
 

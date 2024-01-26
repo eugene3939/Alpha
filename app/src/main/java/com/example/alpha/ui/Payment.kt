@@ -4,16 +4,20 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.alpha.MainActivity
+import com.example.alpha.R
 import com.example.alpha.databinding.ActivityPaymentBinding
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.ShopCart
+import kotlin.reflect.typeOf
 
 //付款頁面
 class Payment : AppCompatActivity() {
@@ -22,10 +26,14 @@ class Payment : AppCompatActivity() {
     private var originTotalPrice = 0    //購物車取得總價
     private var discount = 0            //購物車取得折扣
 
+    private var totalPayment = 0    //支付總金額
+
+    //支付類型
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentBinding.inflate(layoutInflater)
-        setContentView(binding.root)  // 注意這裡的修改
+        setContentView(binding.root)
 
         // 檢索從 Intent 傳遞的 Serializable 物件
         val shoppingCart = intent.getSerializableExtra("shoppingCart") as? ShopCart
@@ -49,9 +57,15 @@ class Payment : AppCompatActivity() {
 
         //取得折扣額和總價
         getDiscountAndTotalPrice(shoppingCart, discountInfoList)
-
+        //顯示找零
+        getPaymentResult()
         //顯示折扣和明細內容
         showBuyCartInformation(shoppingCart, discountInfoList)
+
+        //確認支付別項目並顯示
+        val itemList = resources.getStringArray(R.array.paymentType)  //全部的支付種類
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,itemList)
+        binding.spPaymentWay.adapter = spinnerAdapter
 
         //即時確認文本是否大於小記金額(確認付款按鈕會顯示)
         binding.edtCash.addTextChangedListener(object : TextWatcher {
@@ -61,6 +75,14 @@ class Payment : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // 在文本變化時執行的操作
+                val text = binding.edtCash.text.toString()
+                val value = text.toIntOrNull()
+                //更新到totalPayment (支付總金額)
+                if (value != null) {
+                    totalPayment = value
+                    //顯示於畫面
+                    getPaymentResult()
+                }
             }
 
             // 在文本變化之後執行的操作
@@ -79,6 +101,14 @@ class Payment : AppCompatActivity() {
         //清除金額
         binding.btnClear.setOnClickListener {
             binding.edtCash.setText("")
+            totalPayment = 0
+            binding.edtCash.setText("0")
+        }
+
+        //確認付款
+        binding.btnConfirmPayment.setOnClickListener {
+            //這邊顯示付款資訊
+            Toast.makeText(this,"付款成功",Toast.LENGTH_SHORT).show()
         }
 
         //上一頁(homeFragment)
@@ -89,9 +119,26 @@ class Payment : AppCompatActivity() {
         }
     }
 
+    //顯示找零
+    @SuppressLint("SetTextI18n")
+    private fun getPaymentResult() {
+        binding.txtPayment.text = "支付: $totalPayment"
+        binding.txtTotalPrice.text = "總價: ${originTotalPrice - discount}"
+
+        //如果金額大於0顯示金額，否則顯示0
+        val change = totalPayment - (originTotalPrice - discount)
+        if (change>=0){
+            binding.txtChange.text = "找零: $change"
+        }else{
+            binding.txtChange.text = "找零: $0"
+        }
+    }
+
     //取得折扣額和總價
     @SuppressLint("SetTextI18n")
     private fun getDiscountAndTotalPrice(shoppingCart: ShopCart?, discountInfoList: ArrayList<DiscountInfo>?) {
+        //找零金額
+        var change = 0
         //取得購物車總價
         if (shoppingCart != null) {
             for (i in shoppingCart.selectedProducts){
@@ -104,8 +151,6 @@ class Payment : AppCompatActivity() {
                 discount+=j.totalDiscount
             }
         }
-
-        binding.txtTotalPrice.text = "總價: ${originTotalPrice - discount}"
     }
 
     //顯示折扣和明細內容
