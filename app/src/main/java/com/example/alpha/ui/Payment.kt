@@ -8,6 +8,8 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.alpha.MainActivity
@@ -16,6 +18,7 @@ import com.example.alpha.databinding.ActivityPaymentBinding
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.DiscountInfo
+import com.example.alpha.ui.myObject.PaymentMethod
 import com.example.alpha.ui.myObject.ShopCart
 import kotlin.reflect.typeOf
 
@@ -27,6 +30,10 @@ class Payment : AppCompatActivity() {
     private var discount = 0            //購物車取得折扣
 
     private var totalPayment = 0    //支付總金額
+
+    private var paymentMethodNow = 0//目前的支付方式
+
+    private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
 
     //支付類型
 
@@ -62,53 +69,58 @@ class Payment : AppCompatActivity() {
         //顯示折扣和明細內容
         showBuyCartInformation(shoppingCart, discountInfoList)
 
+        //切換支付方式
+        binding.spPaymentWay.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long,
+            ) {
+                paymentMethodNow = position
+                Log.d("切換付款方式", paymentMethodNow.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
+
         //確認支付別項目並顯示
         val itemList = resources.getStringArray(R.array.paymentType)  //全部的支付種類
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,itemList)
         binding.spPaymentWay.adapter = spinnerAdapter
 
-        //即時確認文本是否大於小記金額(確認付款按鈕會顯示)
-        binding.edtCash.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // 在文本變化之前執行的操作
-            }
+        //透過點擊listView更新付款細節
+        binding.lsPaymentWay.setOnItemClickListener{_, _, position, _ ->
+            //Toast.makeText(this,"你點擊了 $position",Toast.LENGTH_SHORT).show()
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 在文本變化時執行的操作
-                val text = binding.edtCash.text.toString()
-                val value = text.toIntOrNull()
-                //更新到totalPayment (支付總金額)
-                if (value != null) {
-                    totalPayment = value
-                    //顯示於畫面
-                    getPaymentResult()
-                }
+            //透過顯示文字更新付款內容
+            binding.spPaymentWay.setSelection(position)                       //選擇支付方式
+            //變更為選擇的顯示金額
+            val selectedPaymentType = itemList[position]
+            val pay = paymentList.find { it.paymentType == selectedPaymentType }
+            if (pay != null) {
+                binding.edtCash.setText(pay.paymentAmount.toString())
             }
+        }
 
-            // 在文本變化之後執行的操作
-            override fun afterTextChanged(s: Editable?) {
-                //只有支付金額大於應付金額才能使用(確認付款按鈕)
-                val text = binding.edtCash.text.toString()
-                if (text.isNotEmpty()) {
-                    val value = text.toIntOrNull()
-                    binding.btnConfirmPayment.isEnabled = value != null && value >= originTotalPrice-discount  //只有大於總金額-折扣，才顯示按鈕(測試)
-                } else {
-                    binding.btnConfirmPayment.isEnabled = false
-                }
+        //點擊確定後確定支付
+        binding.btnConfirm.setOnClickListener {
+            val enterText = binding.edtCash.text.toString().toInt()
+
+            if (enterText>=0){
+                //更新付款別和金額
+                updatePaymentAmount(paymentList, itemList[paymentMethodNow], enterText)
+                showBuyCartInformation(shoppingCart, discountInfoList)
             }
-        })
+        }
 
         //清除金額
         binding.btnClear.setOnClickListener {
-            binding.edtCash.setText("")
             totalPayment = 0
             binding.edtCash.setText("0")
-        }
-
-        //確認付款
-        binding.btnConfirmPayment.setOnClickListener {
-            //這邊顯示付款資訊
-            Toast.makeText(this,"付款成功",Toast.LENGTH_SHORT).show()
         }
 
         //上一頁(homeFragment)
@@ -117,6 +129,40 @@ class Payment : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    // 更新付款方式的付款金額
+    private fun updatePaymentAmount(paymentList: MutableList<PaymentMethod>, paymentType: String, amount: Int) {
+        val existingPayment = paymentList.find { it.paymentType == paymentType }
+
+        if (existingPayment != null) {
+            // 如果已存在相同的付款方式，則更新其付款金額
+            existingPayment.paymentAmount = amount
+            Log.d("已經存在","更新為$amount")
+        }else{
+            if (amount != 0) {  //沒有已存在物件的情況下新增物件
+                paymentList.add(PaymentMethod(paymentType, amount))
+                Log.d("尚未存在","加入$amount")
+            }
+        }
+
+        if (amount == 0) {
+            // 如果金額=0，刪除物件
+            // 根據PaymentMethod 類有一個屬性來標識唯一性，比如 paymentType
+            val index = paymentList.indexOfFirst { it.paymentType == paymentType }
+            if (index != -1) {
+                paymentList.removeAt(index)
+                Toast.makeText(this, "金額為0，刪除對象", Toast.LENGTH_SHORT).show()
+                // 刪除付款方式後，更新 Spinner 和 EditText 元素
+                val itemList = resources.getStringArray(R.array.paymentType)
+                val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, itemList)
+                binding.spPaymentWay.adapter = spinnerAdapter
+                binding.edtCash.setText(totalPayment.toString())
+            }
+        }
+
+        // 更新付款方式後，刷新畫面以顯示最新的付款方式列表
+        getPaymentResult()
     }
 
     //顯示找零
@@ -132,6 +178,11 @@ class Payment : AppCompatActivity() {
         }else{
             binding.txtChange.text = "找零: $0"
         }
+
+        //顯示選擇的支付方式和付款額
+        val displayPaymentList = paymentList.map { "${it.paymentType}: ${it.paymentAmount}元" }
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayPaymentList)
+        binding.lsPaymentWay.adapter = spinnerAdapter
     }
 
     //取得折扣額和總價

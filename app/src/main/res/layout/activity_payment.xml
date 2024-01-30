@@ -31,34 +31,29 @@
             android:autofillHints="0"
             android:inputType="number" />
 
+        <!--確定-->
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:text="@string/txt_sent"/>
+
         <!--清除金額-->
         <Button
             android:id="@+id/btn_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
             android:textSize="25sp"
             android:text="@string/txt_clear"/>
     </LinearLayout>
 
     <!--重新選擇支付方式-->
-    <!--付款金額滿足前不可點擊-->
-    <Button
-        android:id="@+id/btn_confirmPayment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/layout_calculator"
-        android:layout_centerHorizontal="true"
-        android:textSize="25sp"
-        android:text="@string/txt_confirmPayment"
-        android:visibility="visible"
-        android:enabled="false"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/layout_payment"
-        android:layout_below="@id/btn_confirmPayment"
+        android:layout_below="@id/layout_calculator"
         android:orientation="vertical">
 
         <!--購買明細-->
@@ -105,6 +100,14 @@
             android:text="@string/txt_change"
             android:textSize="30sp"/>
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/ls_paymentWay"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:gravity="end"
+        android:layout_above="@+id/btn_back"
+        android:layout_toEndOf="@id/layout_payment" />
 
     <!--交易取消-->
     <Button

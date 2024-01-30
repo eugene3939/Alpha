@@ -26,7 +26,7 @@
     <string name="txt_cash">現金</string>
     <string name="txt_cashCard">信用卡</string>
     <string name="txt_electricPayment">電子支付</string>
-    <string name="txt_please_enter_payment">請輸入金額</string>
+    <string name="txt_please_enter_payment">輸入金額</string>
     <string name="txt_confirmPayment">確認付款</string>
     <string name="txt_cancel">交易取消</string>
     <string name="txt_payment">支付</string>
