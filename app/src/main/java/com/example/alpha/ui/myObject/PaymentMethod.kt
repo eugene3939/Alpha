@@ -1,3 +1,3 @@
 package com.example.alpha.ui.myObject
 
-data class PaymentMethod(val paymentType: String, var paymentAmount: Int)
+data class PaymentMethod(var paymentType: String, var paymentAmount: Int)

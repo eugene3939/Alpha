@@ -14,30 +14,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!--選擇支付類別-->
-        <Spinner
-            android:id="@+id/sp_paymentWay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
         <!--輸入金額-->
         <EditText
             android:id="@+id/edt_cash"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:hint="@string/txt_please_enter_payment"
             android:textSize="25sp"
             android:autofillHints="0"
             android:inputType="number" />
-
-        <!--確定-->
-        <Button
-            android:id="@+id/btn_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:text="@string/txt_sent"/>
 
         <!--清除金額-->
         <Button
@@ -48,12 +34,42 @@
             android:text="@string/txt_clear"/>
     </LinearLayout>
 
+    <!--支付別按鈕-->
+    <LinearLayout
+        android:id="@+id/layout_paymentTYpe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_calculator"
+        android:orientation="horizontal">
+
+        <!--現金支付-->
+        <Button
+            android:id="@+id/btn_cash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_cash"/>
+
+        <!--信用卡支付-->
+        <Button
+            android:id="@+id/btn_cashCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_cashCard"/>
+
+        <!--電子支付-->
+        <Button
+            android:id="@+id/btn_electricPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_electricPayment"/>
+    </LinearLayout>
+
     <!--重新選擇支付方式-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/layout_payment"
-        android:layout_below="@id/layout_calculator"
+        android:layout_below="@id/layout_paymentTYpe"
         android:orientation="vertical">
 
         <!--購買明細-->
@@ -109,6 +125,16 @@
         android:layout_above="@+id/btn_back"
         android:layout_toEndOf="@id/layout_payment" />
 
+    <!--交易送出-->
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:text="@string/txt_sent"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/btn_back"
+        android:enabled="false"/>
     <!--交易取消-->
     <Button
         android:id="@+id/btn_back"
