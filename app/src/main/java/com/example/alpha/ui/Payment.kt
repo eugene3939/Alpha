@@ -1,6 +1,7 @@
 package com.example.alpha.ui
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,11 +15,15 @@ import android.widget.Toast
 import com.example.alpha.MainActivity
 import com.example.alpha.R
 import com.example.alpha.databinding.ActivityPaymentBinding
+import com.example.alpha.ui.dbhelper.InvoiceDBHelper
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.PaymentMethod
 import com.example.alpha.ui.myObject.ShopCart
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 //付款頁面
 class Payment : AppCompatActivity() {
@@ -33,12 +38,15 @@ class Payment : AppCompatActivity() {
 
     private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
 
-    //支付類型
+    private lateinit var dbHelper: InvoiceDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 初始化發票資料庫助手
+        dbHelper = InvoiceDBHelper(this)
 
         // 檢索從 Intent 傳遞的 Serializable 物件
         val shoppingCart = intent.getSerializableExtra("shoppingCart") as? ShopCart
@@ -79,8 +87,6 @@ class Payment : AppCompatActivity() {
                     val fullPayment = originTotalPrice - discount
 
                     updatePaymentAmount(paymentList,"現金",fullPayment)  //新增全部金額
-
-                    Toast.makeText(this,"付款成功",Toast.LENGTH_SHORT).show()
                 }else if(enterText.toInt()>=0){ //可溢收
                     updatePaymentAmount(paymentList,"現金",enterText.toInt())  //新增輸入金額
                 }else{
@@ -95,25 +101,31 @@ class Payment : AppCompatActivity() {
 
         //點擊信用卡支付按鈕
         binding.btnCashCard.setOnClickListener {
-            val enterText = binding.edtCash.text.toString()
+            if(countingState){  //信用卡只要新增成功就不允許修改
+                val enterText = binding.edtCash.text.toString()
 
-            var otherPayment = paymentList.sumOf { it.paymentAmount } - (paymentList.find { it.paymentType == "信用卡" }?.paymentAmount ?: 0)
+                var otherPayment = paymentList.sumOf { it.paymentAmount } - (paymentList.find { it.paymentType == "信用卡" }?.paymentAmount ?: 0)
 
-            if (enterText == ""){   //沒有輸入，自動填入全部金額
-                val fullPayment = originTotalPrice - discount
+                if (enterText == ""){   //沒有輸入，自動填入全部金額
+                    val fullPayment = originTotalPrice - discount
 
-                updatePaymentAmount(paymentList,"信用卡",fullPayment - otherPayment)  //新增全部金額
-            }else if(enterText.toInt()>=0 && enterText.toInt()<= originTotalPrice - discount - otherPayment){   //不允許溢收
-                updatePaymentAmount(paymentList,"信用卡",enterText.toInt())  //新增輸入金額
+                    updatePaymentAmount(paymentList,"信用卡",fullPayment - otherPayment)  //新增全部金額
+                    countingState = false
+                }else if(enterText.toInt()>=0 && enterText.toInt()<= originTotalPrice - discount - otherPayment){   //不允許溢收
+                    updatePaymentAmount(paymentList,"信用卡",enterText.toInt())  //新增輸入金額
+                    countingState = false
+                }else{
+                    Toast.makeText(this,"請重新輸入金額",Toast.LENGTH_SHORT).show()
+                }
+                getPaymentResult()  //更新金額面板
             }else{
                 Toast.makeText(this,"信用卡支付無法變更",Toast.LENGTH_SHORT).show()
             }
-            getPaymentResult()  //更新金額面板
+
         }
 
         //透過點擊listView更新付款細節
         binding.lsPaymentWay.setOnItemClickListener{_, _, position, _ ->
-            //Toast.makeText(this,"你點擊了 $position",Toast.LENGTH_SHORT).show()
 
             //變更為選擇的顯示金額
             val selectedPaymentType = itemList[position]
@@ -126,6 +138,21 @@ class Payment : AppCompatActivity() {
         //送出交易
         binding.btnSend.setOnClickListener {
             Toast.makeText(this,"交易成功",Toast.LENGTH_SHORT).show()
+
+            // 在這裡將交易內容寫入資料表
+            val invoiceId = saveInvoiceToDatabase(paymentList, shoppingCart, discountInfoList)
+            Log.d("Invoice ID", "新增的發票 ID: $invoiceId")
+
+            // 檢查 InvoiceDBHelper 的所有項目
+            val dbHelper = InvoiceDBHelper(this)
+            val allInvoices = dbHelper.getAllInvoices()
+            for (invoice in allInvoices) {
+                Log.d("Invoice Details", "ID: ${invoice.id}, Payment IDs: ${invoice.paymentIds}, Item List: ${invoice.itemList}, Total Price: ${invoice.totalPrice}, Discount: ${invoice.discount}")
+            }
+
+            Log.d("Payment List", paymentList.toString())
+            Log.d("Shopping Cart", shoppingCart.toString())
+            Log.d("Discount Info List", discountInfoList.toString())
         }
 
         //清除金額
@@ -224,5 +251,51 @@ class Payment : AppCompatActivity() {
                 discount+=j.totalDiscount
             }
         }
+    }
+
+    // 將交易內容寫入資料表的函數
+    private fun saveInvoiceToDatabase(
+        paymentList: MutableList<PaymentMethod>,
+        shoppingCart: ShopCart?,
+        discountInfoList: ArrayList<DiscountInfo>?
+    ): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(InvoiceDBHelper.KEY_PAYMENT_IDS, paymentListToString(paymentList))
+            put(InvoiceDBHelper.KEY_ITEM_LIST, shoppingCartToString(shoppingCart))
+            put(InvoiceDBHelper.KEY_TOTAL_PRICE, originTotalPrice - discount)
+            put(InvoiceDBHelper.KEY_DISCOUNT, discount)
+        }
+        val id = db.insert(InvoiceDBHelper.TABLE_NAME, null, values)
+        db.close()
+        return id
+    }
+
+    // 將付款列表轉換為字串
+    private fun paymentListToString(paymentList: MutableList<PaymentMethod>): String {
+        val paymentStringBuilder = StringBuilder()
+        for (paymentMethod in paymentList) {
+            paymentStringBuilder.append("${paymentMethod.paymentType}:${paymentMethod.paymentAmount},")
+        }
+        return paymentStringBuilder.toString()
+    }
+
+    // 將購物車轉換為字串
+    private fun shoppingCartToString(shoppingCart: ShopCart?): String {
+        // 實現轉換購物車為字串的邏輯，例如序列化為 JSON 字串
+        return ""
+    }
+
+    // 獲取當前日期時間的函數
+    @SuppressLint("SimpleDateFormat")
+    private fun getCurrentDateTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return sdf.format(Date())
+    }
+
+    // 在 Activity 銷毀時關閉資料庫
+    override fun onDestroy() {
+        super.onDestroy()
+        dbHelper.close()
     }
 }

@@ -12,7 +12,6 @@ import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
-import com.example.alpha.ui.dbhelper.TransactionDBHelper
 import com.example.alpha.ui.dbhelper.UserDBHelper
 
 class Login : AppCompatActivity() {
@@ -139,13 +138,13 @@ class Login : AppCompatActivity() {
 
     //發票資訊的Table
     private fun createTransactionDB() {
-        val dbHelper = TransactionDBHelper(this)
-        val defaultTransactionData = listOf(
-            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-10','0');",
-            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-11','0');",
-            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-12','0');"
-        )
-        createDatabase(dbHelper, "TransactionTable", defaultTransactionData)
+//        val dbHelper = TransactionDBHelper(this)
+//        val defaultTransactionData = listOf(
+//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-10','0');",
+//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-11','0');",
+//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-12','0');"
+//        )
+//        createDatabase(dbHelper, "TransactionTable", defaultTransactionData)
     }
 
     override fun onDestroy() {
