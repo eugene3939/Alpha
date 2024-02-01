@@ -1,53 +1,52 @@
 package com.example.alpha.ui.myAdapter
 
-import android.content.Context
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.alpha.R
-import com.example.alpha.databinding.InvoiceItemBinding
 import com.example.alpha.ui.myObject.Invoice
 
-class InvoiceAdapter(private val context: Context) : BaseAdapter() {
-    private var invoiceList = listOf<Invoice>()
-
-    fun setData(data: List<Invoice>) {
-        invoiceList = data
-        notifyDataSetChanged()
-    }
-
+class InvoiceAdapter(private val dataList: List<Invoice>) : BaseAdapter() {
     override fun getCount(): Int {
-        return invoiceList.size
+        return dataList.size
     }
 
     override fun getItem(position: Int): Any {
-        return invoiceList[position]
+        return dataList[position]
     }
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val binding: InvoiceItemBinding
-        val view: View
-
-        if (convertView == null) {
-            binding = InvoiceItemBinding.inflate(LayoutInflater.from(context), parent, false)
-            view = binding.root
-            view.tag = binding
-        } else {
-            binding = convertView.tag as InvoiceItemBinding
-            view = convertView
-        }
-
-        val invoice = invoiceList[position]
-        binding.txtInvoiceId.text = invoice.id
-        // 设置其他视图的内容
+        val view: View = convertView ?: LayoutInflater.from(parent?.context).inflate(R.layout.invoice_item, parent, false)
+        val viewHolder = ViewHolder(view)
+        val data = getItem(position) as Invoice
+        viewHolder.bind(data)
 
         return view
+    }
+
+    class ViewHolder(itemView: View) {
+        //請見product_item.xml
+        private val invoiceId: TextView = itemView.findViewById(R.id.txt_invoiceId)
+        private val invoiceInfo: TextView = itemView.findViewById(R.id.txt_info)
+        private val invoicePayment: TextView = itemView.findViewById(R.id.txt_totalPayment)
+        @SuppressLint("SetTextI18n")
+        fun bind(item: Invoice) {
+            invoiceId.text = item.id
+            if (item.itemList.isNotEmpty()) {
+                invoiceInfo.text = item.paymentIds.toString()
+            } else {
+                invoiceInfo.text = "No items"
+            }
+            invoicePayment.text = item.discount.toString()
+        }
     }
 }
