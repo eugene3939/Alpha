@@ -262,7 +262,7 @@ class Payment : AppCompatActivity() {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(InvoiceDBHelper.KEY_PAYMENT_IDS, paymentListToString(paymentList))
-            put(InvoiceDBHelper.KEY_ITEM_LIST, shoppingCartToString(shoppingCart))
+            put(InvoiceDBHelper.KEY_ITEM_LIST, shoppingCartToString(shoppingCart)) // 將購物車轉換為字串
             put(InvoiceDBHelper.KEY_TOTAL_PRICE, originTotalPrice - discount)
             put(InvoiceDBHelper.KEY_DISCOUNT, discount)
         }
@@ -282,8 +282,17 @@ class Payment : AppCompatActivity() {
 
     // 將購物車轉換為字串
     private fun shoppingCartToString(shoppingCart: ShopCart?): String {
-        // 實現轉換購物車為字串的邏輯，例如序列化為 JSON 字串
-        return ""
+        // 檢查購物車是否為空
+        if (shoppingCart == null || shoppingCart.selectedProducts.isEmpty()) {
+            return ""
+        }
+
+        // 將購物車的商品列表轉換為字串
+        val productListString = shoppingCart.selectedProducts.joinToString(separator = ",") { product ->
+            "${product.pName}:${product.pPrice}:${product.selectedQuantity}"
+        }
+
+        return productListString
     }
 
     // 獲取當前日期時間的函數

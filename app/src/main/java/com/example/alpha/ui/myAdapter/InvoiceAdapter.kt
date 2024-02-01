@@ -30,6 +30,10 @@ class InvoiceAdapter(private val dataList: List<Invoice>) : BaseAdapter() {
         val data = getItem(position) as Invoice
         viewHolder.bind(data)
 
+        for (i in dataList){
+            Log.d("咚咚: ", i.toString())
+        }
+
         return view
     }
 
@@ -42,7 +46,7 @@ class InvoiceAdapter(private val dataList: List<Invoice>) : BaseAdapter() {
         fun bind(item: Invoice) {
             invoiceId.text = item.id
             if (item.itemList.isNotEmpty()) {
-                invoiceInfo.text = item.paymentIds.toString()
+                invoiceInfo.text = item.paymentIds.joinToString("") {it}
             } else {
                 invoiceInfo.text = "No items"
             }
