@@ -1,7 +1,6 @@
 package com.example.alpha.ui.myAdapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,16 +22,11 @@ class InvoiceAdapter(private val dataList: List<Invoice>) : BaseAdapter() {
         return position.toLong()
     }
 
-    @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = convertView ?: LayoutInflater.from(parent?.context).inflate(R.layout.invoice_item, parent, false)
         val viewHolder = ViewHolder(view)
         val data = getItem(position) as Invoice
         viewHolder.bind(data)
-
-        for (i in dataList){
-            Log.d("咚咚: ", i.toString())
-        }
 
         return view
     }
@@ -45,12 +39,19 @@ class InvoiceAdapter(private val dataList: List<Invoice>) : BaseAdapter() {
         @SuppressLint("SetTextI18n")
         fun bind(item: Invoice) {
             invoiceId.text = item.id
+            //購買商品
+            if (item.paymentIds.isNotEmpty()){
+                invoicePayment.text = item.itemList.joinToString ("\n"){it}
+            }else{
+                invoicePayment.text = "no items"
+            }
+
+            //付款方式
             if (item.itemList.isNotEmpty()) {
-                invoiceInfo.text = item.paymentIds.joinToString("") {it}
+                invoiceInfo.text = item.paymentIds.joinToString("\n") {it}
             } else {
                 invoiceInfo.text = "No items"
             }
-            invoicePayment.text = item.discount.toString()
         }
     }
 }

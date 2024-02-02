@@ -137,8 +137,6 @@ class Payment : AppCompatActivity() {
 
         //送出交易
         binding.btnSend.setOnClickListener {
-            Toast.makeText(this,"交易成功",Toast.LENGTH_SHORT).show()
-
             // 在這裡將交易內容寫入資料表
             val invoiceId = saveInvoiceToDatabase(paymentList, shoppingCart, discountInfoList)
             Log.d("Invoice ID", "新增的發票 ID: $invoiceId")
@@ -153,12 +151,18 @@ class Payment : AppCompatActivity() {
             Log.d("Payment List", paymentList.toString())
             Log.d("Shopping Cart", shoppingCart.toString())
             Log.d("Discount Info List", discountInfoList.toString())
+
+            //交易完成，回到首頁
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+
+            Toast.makeText(this,"交易成功",Toast.LENGTH_SHORT).show()
         }
 
         //清除金額
         binding.btnClear.setOnClickListener {
             totalPayment = 0
-            binding.edtCash.setText("0")
+            binding.edtCash.setText("")
         }
 
         //上一頁(homeFragment)

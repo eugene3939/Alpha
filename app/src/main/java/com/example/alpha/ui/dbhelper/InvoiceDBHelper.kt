@@ -66,4 +66,11 @@ class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db.close()
         return invoiceList
     }
+
+    fun deleteInvoice(invoiceId: String): Int {
+        val db = this.writableDatabase
+        val success = db.delete(TABLE_NAME, "$KEY_ID=?", arrayOf(invoiceId.toString()))
+        db.close()
+        return success
+    }
 }
