@@ -2,21 +2,15 @@ package com.example.alpha.ui.notifications
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import com.example.alpha.ConnectionHelper
 import com.example.alpha.databinding.FragmentNotificationsBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.sql.Statement
 
 class NotificationsFragment : Fragment() {
 
@@ -26,52 +20,46 @@ class NotificationsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    var connect: Connection? = null
+    var ConnectionResult = ""
+
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val url = "jdbc:jtds:sqlserver://192.168.91.1:1433/kgpos_test"
-        val user = "kgpos"
-        val password = "admkgpos"
-
-        // 使用協程來執行資料庫操作
-        lifecycleScope.launch {
-            var connection: Connection? = null
-            var statement: Statement? = null
-
-            try {
-                // 連接資料庫
-                connection = withContext(Dispatchers.IO) {
-                    DriverManager.getConnection(url, user, password)
-                }
-                statement = connection.createStatement()
-
-                // 執行查詢
-                val resultSet = statement.executeQuery("SELECT userName, password FROM UserTable")
-
-                // 將結果集中的資料顯示在 TextView 上
-                while (resultSet.next()) {
-                    val userName = resultSet.getString("userName")
-                    val password = resultSet.getString("password")
-
-                    // 假設存在名為 textView 的 TextView
-                    binding.txtConnectionTest1.text = "使用者名稱: $userName\n密碼: $password"
-                }
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            } finally {
-                // 關閉連線和聲明
-                statement?.close()
-                connection?.close()
-            }
-        }
+        getTextFromSQL(binding.txtConnectionTest1,binding.txtConnectionTest2)
 
         return root
+    }
+
+    private fun getTextFromSQL(txtConnectionTest1: TextView, txtConnectionTest2: TextView) {
+        try {
+            val connectionHelper = ConnectionHelper()
+            connect = connectionHelper.connectionClass()
+            if (connect != null) {
+                val query = "Select * From BARCODE"
+                val st = connect!!.createStatement()
+                val rs = st.executeQuery(query)
+                while (rs.next()) {
+                    txtConnectionTest1.text = rs.getString(1)
+                    txtConnectionTest2.text = rs.getString(2)
+
+                    println(rs.getString(1) + "\t" +
+                            rs.getString(2) + "\t")
+                }
+
+                connect!!.close()
+            } else {
+                ConnectionResult = "Check Connection"
+            }
+        } catch (ex: Exception) {
+            Log.e("連線錯誤", ex.message!!)
+        }
     }
 
     override fun onDestroyView() {

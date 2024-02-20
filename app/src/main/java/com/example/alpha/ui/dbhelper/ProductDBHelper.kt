@@ -18,7 +18,7 @@ class ProductDBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         // 在這裡建立資料庫表格等相關邏輯
         db.execSQL("CREATE TABLE IF NOT EXISTS ProductTable (" //建立ProductTable
                 + "pId TEXT PRIMARY KEY,"  //商品id
-                + "pName TEXT,"               //商品名稱
+                + "pName TEXT NOT NULL,"               //商品名稱
                 + "pType TEXT,"               //商品分類
                 + "pBarcode TEXT,"            //商品條碼
                 + "pPrice INTEGER,"           //商品價錢
