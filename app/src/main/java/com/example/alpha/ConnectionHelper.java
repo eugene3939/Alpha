@@ -16,29 +16,29 @@ public class ConnectionHelper {
     @SuppressLint("NewApi")
 
     public Connection connectionClass(){
-        ip = "10.60.200.13";
+        ip = "10.60.200.22";
         database = "kgpos_test";
-        uname = "kgpos";
-        pass = "admkgpos";
+        uname = "eugene";
+        pass = "eugene";
         port = "1433";
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Connection con = null;
-        String ConnectionUrl = null;
+        String ConnectionUrl;
 
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
             ConnectionUrl = "jdbc:jtds:sqlserver://" + ip + ":" + port + ";" + "databaseName=" + database + ";user=" + uname + ";password=" + pass + ";";
-            Log.d("連線~啟動!","ConnectionUrl: " + ConnectionUrl );
+            Log.d("連線URL","ConnectionUrl: " + ConnectionUrl );
             con = DriverManager.getConnection(ConnectionUrl);
             if (con!=null)
-                Log.d("嘿ya!","連線成功");
+                Log.d("連線成功!","連線成功");
             else
-                Log.d("2","連接失敗");
+                Log.d("空白連線","連接失敗");
         }catch (Exception e){
             e.printStackTrace();
-            Log.e("錯誤", Objects.requireNonNull(e.getMessage()));
+            Log.e("錯誤(conn)", Objects.requireNonNull(e.getMessage()));
         }
 
         return con;
