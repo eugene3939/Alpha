@@ -73,40 +73,40 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
         try {
             ftpClient.connect("192.168.91.1", 21)
             ftpClient.login("eugene", "eugenemiku")
-            //ftpClient.connect("10.60.200.15",21)
-            //ftpClient.login("tester","eugenemiku")
             ftpClient.enterLocalPassiveMode()
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
 
             // FTP連接成功
             Log.d("FTP 連線成功", "Connected to FTP server")
 
-            // 切換到遠端目錄
-            ftpClient.changeWorkingDirectory("/POSDown/FullFile")
-
-            // 列出遠端目錄中的文件列表
-            val files = ftpClient.listFiles()
-            for (file in files) {
-                // 打印文件名稱
-                Log.d("遠端文件", file.name)
-
-                // 2. 創建 DevicePOS 資料夾
-                val devicePOSDirectory = File(requireContext().filesDir, "DevicePOS")
+            // 確保外部存儲目錄可用
+            val externalFilesDir = requireContext().getExternalFilesDir(null)
+            externalFilesDir?.let { externalDir ->
+                // 2. 創建 DevicePOS 資料夾在外部存儲目錄中
+                val devicePOSDirectory = File(externalDir, "devicePOS")
                 if (!devicePOSDirectory.exists()) {
                     devicePOSDirectory.mkdirs() // 如果目錄不存在，則創建它
-                }else{
-                    Log.d("絕對路徑名稱",devicePOSDirectory.absolutePath)
+                } else {
+                    Log.d("絕對路徑名稱", devicePOSDirectory.absolutePath)
                 }
 
-                // 3. 下載檔案到 DevicePOS 資料夾中
-                val localFile = File(devicePOSDirectory, file.name)
-                val outputStream = FileOutputStream(localFile)
+                // 列出遠端目錄中的文件列表
+                val files = ftpClient.listFiles()
+                for (file in files) {
+                    // 打印文件名稱
+                    Log.d("遠端文件", file.name)
 
-                // 下載遠端檔案並寫入到本地檔案
-                ftpClient.retrieveFile(file.name, outputStream)
+                    // 3. 下載檔案到 DevicePOS 資料夾中
+                    val localFile = File(devicePOSDirectory, file.name)
+                    val outputStream = FileOutputStream(localFile)
 
-                Log.d("下載成功", file.name)
+                    // 下載遠端檔案並寫入到本地檔案
+                    ftpClient.retrieveFile(file.name, outputStream)
 
+                    Log.d("下載成功", "儲存在: ${localFile.absolutePath}")
+                }
+
+                // 檢查是否成功下載到外部存儲目錄中的 devicePOS 目錄
                 if (devicePOSDirectory.exists() && devicePOSDirectory.isDirectory) {
                     val j = devicePOSDirectory.listFiles()
                     for (i in j!!) {
@@ -115,6 +115,8 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
                 } else {
                     Log.d("DevicePOS", "Directory does not exist or is not a directory")
                 }
+            } ?: run {
+                Log.e("外部存儲目錄不可用", "無法獲取外部存儲目錄")
             }
 
         } catch (e: IOException) {
