@@ -32,6 +32,7 @@
     <string name="txt_payment">支付</string>
     <string name="txt_change">找零</string>
     <string name="txt_delete">作廢</string>
+    <string name="txt_updateFTP">更新資料庫</string>
 
     <string-array name="tableNames">
         <item>UserTable</item>

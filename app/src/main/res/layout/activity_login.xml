@@ -22,7 +22,8 @@
         android:backgroundTint="#E91E63"
         android:hint="@string/login_acc_hint"
         android:inputType="number"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:importantForAutofill="no" />
 
     <TextView
         android:layout_width="match_parent"
@@ -38,7 +39,8 @@
         android:backgroundTint="#E91E63"
         android:hint="@string/login_pas_hint"
         android:inputType="number"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/btn_login"

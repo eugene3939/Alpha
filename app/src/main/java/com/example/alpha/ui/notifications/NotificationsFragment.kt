@@ -1,6 +1,5 @@
 package com.example.alpha.ui.notifications
 
-import android.R.attr
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -28,10 +27,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.sql.Connection
-import android.R.attr.path
-
-import android.os.Environment
-import java.io.FileNotFoundException
 
 
 class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
@@ -44,8 +39,8 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
 
     private lateinit var ftpClient: FTPClient
 
-    var connect: Connection? = null
-    var ConnectionResult = ""
+    private var connect: Connection? = null
+    private var connectionResult = ""
 
     @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("SetTextI18n")
@@ -57,12 +52,13 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        //getTextFromSQL(binding.txtConnectionTest1,binding.txtConnectionTest2)
-
-        //FTP連線
-        GlobalScope.launch(Dispatchers.IO) {
-            // 在 IO 調度器中呼叫 connectFTP()
-            connectFTP()
+        //更新ftp連線
+        binding.btnUpdateFTP.setOnClickListener {
+            //FTP連線
+            GlobalScope.launch(Dispatchers.IO) {
+                // 在 IO 調度器中呼叫 connectFTP()
+                connectFTP()
+            }
         }
 
         return root
@@ -71,6 +67,7 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
     private fun connectFTP() {
         ftpClient = FTPClient()
         try {
+            //1.連線遠端FTP
             ftpClient.connect("10.60.200.15",21)
             ftpClient.login("tester","eugenemiku")
             //ftpClient.connect("192.168.91.1", 21)
@@ -148,7 +145,7 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
 
                 connect!!.close()
             } else {
-                ConnectionResult = "Check Connection"
+                connectionResult = "Check Connection"
             }
         } catch (ex: Exception) {
             Log.e("連線錯誤(kt)", ex.message!!)
