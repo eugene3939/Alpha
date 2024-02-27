@@ -19,9 +19,10 @@
         android:id="@+id/edt_acc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:backgroundTint="#E91E63"
         android:hint="@string/login_acc_hint"
-        android:textSize="30sp"/>
+        android:inputType="number"
+        android:textSize="30sp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -34,16 +35,19 @@
         android:id="@+id/edt_pas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:backgroundTint="#E91E63"
         android:hint="@string/login_pas_hint"
-        android:textSize="30sp"/>
+        android:inputType="number"
+        android:textSize="30sp" />
 
     <Button
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textSize="30sp"
-        android:text="@string/txt_login"/>
+        android:layout_marginTop="30dp"
+        android:backgroundTint="#B18FEF"
+        android:text="@string/txt_login"
+        android:textSize="30sp" />
 
 </LinearLayout>

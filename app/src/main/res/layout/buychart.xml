@@ -33,8 +33,7 @@
         android:layout_height="wrap_content"
         android:text="@string/number"
         android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@color/darkBlue"/>
+        android:textStyle="bold"/>
 
     <!--單項商品價格合計-->
     <TextView

@@ -180,7 +180,6 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         // 關閉 CoroutineScope

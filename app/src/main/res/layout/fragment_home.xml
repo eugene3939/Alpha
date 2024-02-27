@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAE1FB"
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
-
 
     <!-- 搜尋框 -->
     <LinearLayout
@@ -19,63 +19,72 @@
             android:id="@+id/edt_searchRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/txt_table"
             android:layout_weight="0.75"
+            android:autofillHints="empty"
+            android:hint="@string/txt_table"
             android:inputType="text"
-            android:autofillHints="empty"/>
+            android:textColor="#5622B3"
+            android:textColorHint="#21329F"
+            android:textColorLink="#E91E63" />
 
         <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_weight="0.125"
-            android:text="@string/txt_sent"/>
+            android:selectAllOnFocus="false"
+            android:text="@string/txt_sent"
+            android:textSize="20sp"/>
 
         <Button
             android:id="@+id/btn_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_weight="0.125"
-            android:text="@string/txt_clear"/>
+            android:text="@string/txt_clear"
+            android:textSize="20sp"/>
     </LinearLayout>
 
     <!-- 商品分類 -->
     <Spinner
         android:id="@+id/sp_productType"
         android:layout_width="match_parent"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp"
+        android:background="#8493EA"/>
 
     <!-- 欄位內容 -->
     <GridView
         android:id="@+id/gr_tableData"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        android:layout_height="450dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-<!--    &lt;!&ndash; 購物車 &ndash;&gt;-->
-<!--    <ListView-->
-<!--        android:id="@+id/ls_buyChart"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="100dp"-->
-<!--        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/txt_totalPrice"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/txt_totalPrice"
+        android:textColor="#4B5485"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <!-- 確認價格 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/txt_totalPrice"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:text="@string/txt_totalPrice"/>
+
 
         <Button
             android:id="@+id/btn_deal"
-            android:layout_width="200dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:text="@string/txt_sentPrice"/>
+            android:layout_weight="3"
+            android:text="@string/txt_sentPrice"
+            android:textSize="30sp" />
     </LinearLayout>
 </LinearLayout>

@@ -4,6 +4,7 @@ import ProductItemAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -73,7 +74,7 @@ class HomeFragment : Fragment() {
 
         //下拉式選單顯示全部的product種類
         val productTypes = resources.getStringArray(R.array.productType)  //全部的商品種類
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1,productTypes)
+        val spinnerAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,productTypes)
         binding.spProductType.adapter = spinnerAdapter
 
         //下拉式選單變更選擇的Table
@@ -210,14 +211,6 @@ class HomeFragment : Fragment() {
                     intent.putExtra("discountInfoList", discountInfoList as Serializable)
                     startActivity(intent)
                 }
-
-                //要傳遞購物清單、折扣資訊
-//                for (i in shoppingCart.selectedProducts){
-//                    Log.d("你好","$i")
-//                }
-//                for (j in discountInfoList){
-//                    Log.d("購物清單","$j")
-//                }
             }
             builder.setNegativeButton("取消") { dialog, _ ->
                 // 用戶點擊取消

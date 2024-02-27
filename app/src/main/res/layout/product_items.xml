@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/product_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/product_background"
-    android:background="@color/white"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <!--顯示的單一商品項目資訊-->
@@ -30,28 +28,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/zero"
-            android:textStyle="bold"
-            android:textSize="80sp"/>
+            android:textColor="#6E5A91"
+            android:textSize="80sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
     <!-- 商品名稱 -->
+
+    <!-- 商品分類 -->
     <TextView
         android:id="@+id/txt_productName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/txt_default"
+        android:textColor="#61409A"
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <!-- 商品分類 -->
     <TextView
         android:id="@+id/txt_productType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
+        android:textColor="#6473C5"
         android:textSize="20sp" />
 
     <!-- 商品價格 -->
@@ -61,9 +63,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
+        android:textColor="#6473C5"
         android:textSize="20sp"
-        android:textColor="@color/purple_200"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <!-- 商品庫存 -->
     <TextView
@@ -72,6 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/txt_default"
+        android:textColor="#6473C5"
         android:textSize="20sp" />
 
 </LinearLayout>
