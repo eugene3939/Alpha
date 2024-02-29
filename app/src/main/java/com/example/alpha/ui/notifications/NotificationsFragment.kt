@@ -68,7 +68,7 @@ class NotificationsFragment : Fragment(), CoroutineScope by MainScope() {
         ftpClient = FTPClient()
         try {
             //1.連線遠端FTP
-            ftpClient.connect("10.60.200.15",21)
+            ftpClient.connect("10.60.200.13",21)
             ftpClient.login("tester","eugenemiku")
             //ftpClient.connect("192.168.91.1", 21)
             //ftpClient.login("eugene", "eugenemiku")

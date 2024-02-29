@@ -14,9 +14,12 @@ import kotlinx.coroutines.launch
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import java.io.BufferedOutputStream
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileReader
 import java.io.IOException
+import java.io.InputStreamReader
 import java.io.Serializable
 import java.sql.Connection
 
@@ -34,17 +37,36 @@ class DownloadWaiting : AppCompatActivity() {
             // 在 IO 調度器中呼叫 connectFTP()
             connectFTP()
 
+            //讀取csv內容
+            readCsv("/storage/emulated/0/Android/data/com.example.alpha/files/retriveFiles/DEFTBL.csv")
+
             //下載完成跳轉登入頁面
             val intent = Intent(this@DownloadWaiting, Login::class.java)
             startActivity(intent)
         }
     }
 
+    private fun readCsv(filePath: String) {
+
+        // 讀取 CSV 文件
+        val file = File(filePath)
+        val inputStream = BufferedReader(FileReader(file))
+
+        // 逐一讀取、輸出內容
+        var line: String? = inputStream.readLine()
+        while (line != null) {
+            println(line)
+            line = inputStream.readLine()
+        }
+
+        inputStream.close()
+    }
+
     private fun connectFTP() {
         ftpClient = FTPClient()
         try {
             //1.連線遠端FTP
-            ftpClient.connect("10.60.200.15",21)
+            ftpClient.connect("10.60.200.13",21)
             ftpClient.login("tester","eugenemiku")
             //ftpClient.connect("192.168.91.1", 21)
             //ftpClient.login("eugene", "eugenemiku")
@@ -85,18 +107,38 @@ class DownloadWaiting : AppCompatActivity() {
 
     private fun downloadDirectory(ftpClient: FTPClient, remoteDirPath: String, localDir: File) {
         val files = ftpClient.listFiles(remoteDirPath)
-        for (file in files) {
-            val remoteFilePath = remoteDirPath + "/" + file.name
-            val localFile = File(localDir, file.name)
+        val filesMap = files.map { it.name to it }.toMap() // 將檔案列表轉換為名稱與檔案對應的 Map
+        val downloadedFiles = mutableSetOf<String>() // 追蹤已下載的檔案名稱
+
+        for ((fileName, file) in filesMap) {
+            val remoteFilePath = remoteDirPath + "/" + fileName
+            val localFile = File(localDir, fileName)
+
             if (file.isDirectory) {
                 if (!localFile.exists()) {
                     localFile.mkdirs()
                 }
-                downloadDirectory(ftpClient, remoteFilePath, localFile)
+                downloadDirectory(ftpClient, remoteFilePath, localFile) // 全部資料夾完整下載
+            } else if ((remoteDirPath.endsWith("/POSUp") || remoteDirPath.endsWith("/POSDown/FullFile"))) {
+                if (fileName.endsWith(".OK")){
+                    // 在 POSUp 和 POSDown 資料夾中檢查檔案名稱是否以 ".OK" 結尾
+                    val baseFileName = fileName.removeSuffix(".OK")
+                    val baseLocalFile = File(localDir, baseFileName)
+
+                    // 檢查對應的檔案是否存在，若存在則下載
+                    if (filesMap.containsKey(baseFileName)) {
+                        val outputStream = BufferedOutputStream(FileOutputStream(baseLocalFile))
+                        ftpClient.retrieveFile(remoteFilePath, outputStream)
+                        outputStream.close()
+                        downloadedFiles.add(baseFileName) // 將已下載的檔案名稱加入集合
+                    }
+                }
             } else {
+                // 在其他資料夾中直接下載檔案
                 val outputStream = BufferedOutputStream(FileOutputStream(localFile))
                 ftpClient.retrieveFile(remoteFilePath, outputStream)
                 outputStream.close()
+                downloadedFiles.add(fileName) // 將已下載的檔案名稱加入集合
             }
         }
     }

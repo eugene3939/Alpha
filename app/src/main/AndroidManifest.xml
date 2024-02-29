@@ -18,6 +18,7 @@
         android:theme="@style/Theme.Alpha">
         <activity
             android:name=".DownloadWaiting"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
