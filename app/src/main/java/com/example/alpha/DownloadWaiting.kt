@@ -38,7 +38,7 @@ class DownloadWaiting : AppCompatActivity() {
             connectFTP()
 
             //讀取csv內容
-            readCsv("/storage/emulated/0/Android/data/com.example.alpha/files/retriveFiles/DEFTBL.csv")
+            readCsv("/storage/emulated/0/Android/data/com.example.alpha/files/definitionFile/DEFFLD.csv")
 
             //下載完成跳轉登入頁面
             val intent = Intent(this@DownloadWaiting, Login::class.java)
@@ -66,7 +66,7 @@ class DownloadWaiting : AppCompatActivity() {
         ftpClient = FTPClient()
         try {
             //1.連線遠端FTP
-            ftpClient.connect("10.60.200.13",21)
+            ftpClient.connect("10.60.200.37",21)
             ftpClient.login("tester","eugenemiku")
             //ftpClient.connect("192.168.91.1", 21)
             //ftpClient.login("eugene", "eugenemiku")
