@@ -4,9 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.example.alpha.ui.Payment
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,9 +16,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.FileReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.io.Serializable
-import java.sql.Connection
 
 class DownloadWaiting : AppCompatActivity() {
 
@@ -38,7 +32,7 @@ class DownloadWaiting : AppCompatActivity() {
             connectFTP()
 
             //讀取csv內容
-            readCsv("/storage/emulated/0/Android/data/com.example.alpha/files/definitionFile/DEFFLD.csv")
+            "/storage/emulated/0/Android/data/com.example.alpha/files/definitionFile/DEFFLD.csv".readCsv()
 
             //下載完成跳轉登入頁面
             val intent = Intent(this@DownloadWaiting, Login::class.java)
@@ -46,10 +40,9 @@ class DownloadWaiting : AppCompatActivity() {
         }
     }
 
-    private fun readCsv(filePath: String) {
-
+    private fun String.readCsv() {
         // 讀取 CSV 文件
-        val file = File(filePath)
+        val file = File(this)
         val inputStream = BufferedReader(FileReader(file))
 
         // 逐一讀取、輸出內容
@@ -66,7 +59,7 @@ class DownloadWaiting : AppCompatActivity() {
         ftpClient = FTPClient()
         try {
             //1.連線遠端FTP
-            ftpClient.connect("10.60.200.37",21)
+            ftpClient.connect("10.60.200.45",21)
             ftpClient.login("tester","eugenemiku")
             //ftpClient.connect("192.168.91.1", 21)
             //ftpClient.login("eugene", "eugenemiku")

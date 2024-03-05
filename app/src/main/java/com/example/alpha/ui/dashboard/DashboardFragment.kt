@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import com.example.alpha.databinding.FragmentDashboardBinding
-import com.example.alpha.ui.dbhelper.InvoiceDBHelper
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceRepository
 import com.example.alpha.ui.myAdapter.InvoiceAdapter
 import com.example.alpha.ui.myObject.Invoice
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 
 class DashboardFragment : Fragment() {
 
@@ -26,7 +29,7 @@ class DashboardFragment : Fragment() {
         val root: View = binding.root
 
         // 加載並顯示發票數據
-        val invoiceList : ArrayList<Invoice> = loadInvoices()
+        val invoiceList: List<Invoice> = loadInvoices()
 
         val adapter = InvoiceAdapter(invoiceList)
         binding.lsInvoice.adapter = adapter
@@ -42,15 +45,19 @@ class DashboardFragment : Fragment() {
             alertDialogBuilder.setMessage("$clickedItem")
             alertDialogBuilder.setPositiveButton("作廢") { dialog, _ ->
                 // 刪除資料庫中的發票
-                val dbHelper = InvoiceDBHelper(requireContext())
-                dbHelper.deleteInvoice(clickedItem.id) // 假設 clickedItem 有一個 id 屬性表示發票的唯一標識符
-
-                // 從列表中移除被刪除的發票
-                invoiceList.removeAt(position)
-                adapter.notifyDataSetChanged()
+                val invoiceRepository = InvoiceRepository(requireContext())
+                CoroutineScope(Dispatchers.Main).launch {
+                    val deleteSuccess = invoiceRepository.deleteInvoice(clickedItem.id)
+                    if (deleteSuccess > 0) {
+                        // 從列表中移除被刪除的發票
+                        val newList = ArrayList(invoiceList)
+                        newList.removeAt(position)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
 
                 dialog.dismiss()
-            }.setNegativeButton("取消"){dialog, _ ->
+            }.setNegativeButton("取消") { dialog, _ ->
                 dialog.dismiss()
             }
 
@@ -62,10 +69,9 @@ class DashboardFragment : Fragment() {
         return root
     }
 
-    private fun loadInvoices(): ArrayList<Invoice> {
-        val dbHelper = InvoiceDBHelper(requireContext())
-
-        return dbHelper.getAllInvoices()
+    private fun loadInvoices(): List<Invoice> {
+        val invoiceRepository = InvoiceRepository(requireContext())
+        return invoiceRepository.getAllInvoices()
     }
 
     override fun onDestroyView() {

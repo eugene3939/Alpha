@@ -143,7 +143,7 @@ class Payment : AppCompatActivity() {
 
             // 檢查 InvoiceDBHelper 的所有項目
             val dbHelper = InvoiceDBHelper(this)
-            val allInvoices = dbHelper.getAllInvoices()
+            val allInvoices = dbHelper.getAllInvoicesTable()
             for (invoice in allInvoices) {
                 Log.d("Invoice Details", "ID: ${invoice.id}, Payment IDs: ${invoice.paymentIds}, Item List: ${invoice.itemList}, Total Price: ${invoice.totalPrice}, Discount: ${invoice.discount}")
             }

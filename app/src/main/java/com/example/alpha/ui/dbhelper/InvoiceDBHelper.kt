@@ -6,9 +6,10 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDao
 import com.example.alpha.ui.myObject.Invoice
 
-class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), InvoiceDao {
     companion object {
         private const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "InvoiceDB"
@@ -31,7 +32,7 @@ class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     // 新增發票
-    fun addInvoice(invoice: Invoice): Long {
+    override fun addInvoice(invoice: Invoice): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
             put(KEY_PAYMENT_IDS, invoice.paymentIds.joinToString(","))
@@ -44,10 +45,9 @@ class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         return id
     }
 
-    // 取得所有發票
     @SuppressLint("Range")
-    fun getAllInvoices(): ArrayList<Invoice> {
-        val invoiceList = ArrayList<Invoice>()
+    override fun getAllInvoicesTable(): List<Invoice> {
+        val invoiceList = mutableListOf<Invoice>()
         val selectQuery = "SELECT * FROM $TABLE_NAME"
         val db = this.readableDatabase
         val cursor: Cursor = db.rawQuery(selectQuery, null)
@@ -67,9 +67,9 @@ class InvoiceDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         return invoiceList
     }
 
-    fun deleteInvoice(invoiceId: String): Int {
+    override fun deleteInvoiceTable(invoiceId: String): Int {
         val db = this.writableDatabase
-        val success = db.delete(TABLE_NAME, "$KEY_ID=?", arrayOf(invoiceId.toString()))
+        val success = db.delete(TABLE_NAME, "$KEY_ID=?", arrayOf(invoiceId))
         db.close()
         return success
     }
