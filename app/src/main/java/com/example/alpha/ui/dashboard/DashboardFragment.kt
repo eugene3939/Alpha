@@ -29,7 +29,7 @@ class DashboardFragment : Fragment() {
         val root: View = binding.root
 
         // 加載並顯示發票數據
-        val invoiceList: List<Invoice> = loadInvoices()
+        val invoiceList: MutableList<Invoice> = loadInvoices().toMutableList()
 
         val adapter = InvoiceAdapter(invoiceList)
         binding.lsInvoice.adapter = adapter
@@ -50,8 +50,7 @@ class DashboardFragment : Fragment() {
                     val deleteSuccess = invoiceRepository.deleteInvoice(clickedItem.id)
                     if (deleteSuccess > 0) {
                         // 從列表中移除被刪除的發票
-                        val newList = ArrayList(invoiceList)
-                        newList.removeAt(position)
+                        invoiceList.removeAt(position)
                         adapter.notifyDataSetChanged()
                     }
                 }
