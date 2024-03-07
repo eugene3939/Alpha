@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 class UserDBManager(context: Context) {
     private val db: UserDataBase = Room.databaseBuilder(
         context,
-        UserDataBase::class.java, "app-database"
+        UserDataBase::class.java, "user-database"
     ).build()
 
     private val userDao: UserDao = db.userDao()

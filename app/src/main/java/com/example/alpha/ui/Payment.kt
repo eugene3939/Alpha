@@ -1,30 +1,26 @@
 package com.example.alpha.ui
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
-import androidx.room.Room
 import com.example.alpha.MainActivity
 import com.example.alpha.R
 import com.example.alpha.databinding.ActivityPaymentBinding
-import com.example.alpha.ui.dbhelper.InvoiceDBHelper
-import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDao
-import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDataBase
-import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceRepository
-import com.example.alpha.ui.myAdapter.DiscountProductAdapter
-import com.example.alpha.ui.myAdapter.ShopCartAdapter
+import com.example.alpha.ui.dbhelper.invoiceDao.Invoice
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDBManager
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.PaymentMethod
 import com.example.alpha.ui.myObject.ShopCart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,7 +38,9 @@ class Payment : AppCompatActivity() {
 
     private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
 
-    private lateinit var dbHelper: InvoiceDBHelper
+//    private lateinit var dbHelper: InvoiceDBHelper
+
+    private lateinit var databaseManager: InvoiceDBManager //(用封裝的方式獲取Dao)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +48,8 @@ class Payment : AppCompatActivity() {
         binding = ActivityPaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 初始化發票資料庫助手
-        dbHelper = InvoiceDBHelper(this)
+        // 初始化資料庫管理器
+        databaseManager = InvoiceDBManager(applicationContext)
 
         // 檢索從 Intent 傳遞的 Serializable 物件
         val shoppingCart = intent.getSerializableExtra("shoppingCart") as? ShopCart
@@ -142,21 +140,9 @@ class Payment : AppCompatActivity() {
 
         //送出交易
         binding.btnSend.setOnClickListener {
-            // 在這裡將交易內容寫入資料表
-            val invoiceId = saveInvoiceToDatabase(paymentList, shoppingCart, discountInfoList)
-            Log.d("Invoice ID", "新增的發票 ID: $invoiceId")
-
-            // 檢查 InvoiceDBHelper 的所有項目
-            val invoiceRepository = InvoiceRepository(this)
-            val allInvoices = invoiceRepository.getAllInvoices()
-            for (invoice in allInvoices) {
-                Log.d("Invoice Details", "ID: ${invoice.id}, Payment IDs: ${invoice.paymentIds}, Item List: ${invoice.itemList}, Total Price: ${invoice.totalPrice}, Discount: ${invoice.discount}")
-            }
-
-            Log.d("Payment List", paymentList.toString())
-            Log.d("Shopping Cart", shoppingCart.toString())
-            Log.d("Discount Info List", discountInfoList.toString())
-
+            //確認格式正確後儲存到Invoice table
+            saveToInvoice(paymentList,shoppingCart,discountInfoList)
+//
             //交易完成，回到首頁
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -176,6 +162,24 @@ class Payment : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    //確認格式正確後儲存到Invoice table
+    private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?, discountInfoList: ArrayList<DiscountInfo>?) {
+        GlobalScope.launch(Dispatchers.IO) {
+
+            databaseManager.addInvoice(Invoice( paymentIds = paymentListToString(paymentList),
+                                                itemList = shoppingCartToString(shoppingCart),
+                                                totalPrice = originTotalPrice-discount,
+                                                discount = discount))
+
+//            Log.d("格式檢查: ","123")
+//            Log.d("格式檢查: ",paymentListToString(paymentList))
+//            Log.d("格式檢查: ",shoppingCartToString(shoppingCart))
+//            Log.d("格式檢查: ","${originTotalPrice-discount}")
+//            Log.d("格式檢查: ","$discount")
+        }
+
     }
 
     // 更新付款方式的付款金額
@@ -262,24 +266,6 @@ class Payment : AppCompatActivity() {
         }
     }
 
-    // 將交易內容寫入資料表的函數
-    private fun saveInvoiceToDatabase(
-        paymentList: MutableList<PaymentMethod>,
-        shoppingCart: ShopCart?,
-        discountInfoList: ArrayList<DiscountInfo>?
-    ): Long {
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(InvoiceDBHelper.KEY_PAYMENT_IDS, paymentListToString(paymentList))
-            put(InvoiceDBHelper.KEY_ITEM_LIST, shoppingCartToString(shoppingCart)) // 將購物車轉換為字串
-            put(InvoiceDBHelper.KEY_TOTAL_PRICE, originTotalPrice - discount)
-            put(InvoiceDBHelper.KEY_DISCOUNT, discount)
-        }
-        val id = db.insert(InvoiceDBHelper.TABLE_NAME, null, values)
-        db.close()
-        return id
-    }
-
     // 將付款列表轉換為字串
     private fun paymentListToString(paymentList: MutableList<PaymentMethod>): String {
         val paymentStringBuilder = StringBuilder()
@@ -309,11 +295,5 @@ class Payment : AppCompatActivity() {
     private fun getCurrentDateTime(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return sdf.format(Date())
-    }
-
-    // 在 Activity 銷毀時關閉資料庫
-    override fun onDestroy() {
-        super.onDestroy()
-        dbHelper.close()
     }
 }

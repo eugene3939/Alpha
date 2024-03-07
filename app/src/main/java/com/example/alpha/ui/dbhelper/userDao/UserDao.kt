@@ -7,11 +7,6 @@ import androidx.room.Query
 
 @Dao
 interface UserDao {
-
-    //搜尋全部用戶
-    @Query("SELECT * FROM Users")
-    suspend fun getAll(): List<User>
-
     //檢查是否有符合id的用戶
     @Query("SELECT * FROM Users WHERE id = :userId")
     suspend fun getUserById(userId: Int): User?

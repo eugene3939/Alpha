@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
@@ -54,26 +53,8 @@ class Login : AppCompatActivity() {
             val acc = binding.edtAcc.text.toString()
             val pas = binding.edtPas.text.toString()
 
-//            val loginQuery = "SELECT * FROM UserTable WHERE account = '$acc' AND password = '$pas';"
-//            val loginCursor = dbrw.rawQuery(loginQuery, null)
-//
-//            // 檢查是否有查詢結果
-//            if (loginCursor.moveToFirst()) {
-//                val userName = loginCursor.getString(loginCursor.getColumnIndex("uName")) //取得用戶名稱
-//                val intent = Intent(this, MainActivity::class.java)
-//                Toast.makeText(this, "Welcome: $userName", Toast.LENGTH_SHORT).show()
-//                Log.d("用戶登入成功", "用戶名稱: $userName")
-//                startActivity(intent)
-//            } else {
-//                // 資料庫中未包含 User 的資料
-//                Toast.makeText(this, "登入失敗", Toast.LENGTH_SHORT).show()
-//                Log.d("登入失敗提示: ", loginQuery)
-//            }
-//
-//            loginCursor?.close() // 確保在使用完畢後關閉 Cursor
-
             //用Dao查看是否為許可用戶
-            // 获取所有用户示例
+            // 切換執行續進行查詢
             GlobalScope.launch(Dispatchers.IO) {
                 val accessUser = databaseManager.loginByAccPas(acc,pas)
 
