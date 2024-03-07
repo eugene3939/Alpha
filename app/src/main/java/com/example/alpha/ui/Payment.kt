@@ -12,10 +12,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.room.Room
 import com.example.alpha.MainActivity
 import com.example.alpha.R
 import com.example.alpha.databinding.ActivityPaymentBinding
 import com.example.alpha.ui.dbhelper.InvoiceDBHelper
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDao
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDataBase
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceRepository
 import com.example.alpha.ui.myAdapter.DiscountProductAdapter
 import com.example.alpha.ui.myAdapter.ShopCartAdapter
 import com.example.alpha.ui.myObject.DiscountInfo
@@ -39,6 +43,7 @@ class Payment : AppCompatActivity() {
     private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
 
     private lateinit var dbHelper: InvoiceDBHelper
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,8 +147,8 @@ class Payment : AppCompatActivity() {
             Log.d("Invoice ID", "新增的發票 ID: $invoiceId")
 
             // 檢查 InvoiceDBHelper 的所有項目
-            val dbHelper = InvoiceDBHelper(this)
-            val allInvoices = dbHelper.getAllInvoicesTable()
+            val invoiceRepository = InvoiceRepository(this)
+            val allInvoices = invoiceRepository.getAllInvoices()
             for (invoice in allInvoices) {
                 Log.d("Invoice Details", "ID: ${invoice.id}, Payment IDs: ${invoice.paymentIds}, Item List: ${invoice.itemList}, Total Price: ${invoice.totalPrice}, Discount: ${invoice.discount}")
             }

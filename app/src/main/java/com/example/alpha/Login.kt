@@ -12,17 +12,28 @@ import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
-import com.example.alpha.ui.dbhelper.UserDBHelper
+import com.example.alpha.ui.dbhelper.userDao.User
+import com.example.alpha.ui.dbhelper.userDao.UserDBManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 class Login : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var dbrw: SQLiteDatabase
 
+    private lateinit var databaseManager: UserDBManager //(用封裝的方式獲取Dao)
+
     @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // 初始化資料庫管理器
+        databaseManager = UserDBManager(applicationContext)
 
         // 使用 View Binding 初始化綁定
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -33,7 +44,9 @@ class Login : AppCompatActivity() {
         createProductDB()     //創建ProductDB
         createDiscountDB()    //創建DiscountDB
         createPairDiscountDB()//創建PairDiscountDB
-        createUserDB()        //創建UserDB
+
+        insertUserDB(1,"Eugene", "1", "1")        //建立預設用戶
+        insertUserDB(2,"Oscar", "3", "3")
 
         // 登入按鈕
         binding.btnLogin.setOnClickListener {
@@ -41,23 +54,41 @@ class Login : AppCompatActivity() {
             val acc = binding.edtAcc.text.toString()
             val pas = binding.edtPas.text.toString()
 
-            val loginQuery = "SELECT * FROM UserTable WHERE account = '$acc' AND password = '$pas';"
-            val loginCursor = dbrw.rawQuery(loginQuery, null)
+//            val loginQuery = "SELECT * FROM UserTable WHERE account = '$acc' AND password = '$pas';"
+//            val loginCursor = dbrw.rawQuery(loginQuery, null)
+//
+//            // 檢查是否有查詢結果
+//            if (loginCursor.moveToFirst()) {
+//                val userName = loginCursor.getString(loginCursor.getColumnIndex("uName")) //取得用戶名稱
+//                val intent = Intent(this, MainActivity::class.java)
+//                Toast.makeText(this, "Welcome: $userName", Toast.LENGTH_SHORT).show()
+//                Log.d("用戶登入成功", "用戶名稱: $userName")
+//                startActivity(intent)
+//            } else {
+//                // 資料庫中未包含 User 的資料
+//                Toast.makeText(this, "登入失敗", Toast.LENGTH_SHORT).show()
+//                Log.d("登入失敗提示: ", loginQuery)
+//            }
+//
+//            loginCursor?.close() // 確保在使用完畢後關閉 Cursor
 
-            // 檢查是否有查詢結果
-            if (loginCursor.moveToFirst()) {
-                val userName = loginCursor.getString(loginCursor.getColumnIndex("uName")) //取得用戶名稱
-                val intent = Intent(this, MainActivity::class.java)
-                Toast.makeText(this, "Welcome: $userName", Toast.LENGTH_SHORT).show()
-                Log.d("用戶登入成功", "用戶名稱: $userName")
-                startActivity(intent)
-            } else {
-                // 資料庫中未包含 User 的資料
-                Toast.makeText(this, "登入失敗", Toast.LENGTH_SHORT).show()
-                Log.d("登入失敗提示: ", loginQuery)
+            //用Dao查看是否為許可用戶
+            // 获取所有用户示例
+            GlobalScope.launch(Dispatchers.IO) {
+                val accessUser = databaseManager.loginByAccPas(acc,pas)
+
+                //有許可用戶
+                if (accessUser != null){
+                    //跳轉到登入頁面
+                    val intent = Intent(this@Login,MainActivity::class.java)
+                    startActivity(intent)
+
+                    //顯示登入成功訊息
+                    Log.d("登入成功", "用戶名稱: ${accessUser.name}")
+                }else{
+                    Log.d("登入失敗: ", "無此用戶")
+                }
             }
-
-            loginCursor?.close() // 確保在使用完畢後關閉 Cursor
         }
     }
 
@@ -90,14 +121,16 @@ class Login : AppCompatActivity() {
         countCursor.close()
     }
 
-    //修改欄位需要修改login(本頁)、dbHelper(對應的),物件(product, discountProduct)
-    private fun createUserDB() {
-        val dbHelper = UserDBHelper(this)
-        val defaultUserData = listOf(
-            "INSERT INTO UserTable(uId, uName, account, password) VALUES(1,'Eugene', 1, 1);",
-            "INSERT INTO UserTable(uId, uName, account, password) VALUES(2,'Oscar', 3, 3);"
-        )
-        createDatabase(dbHelper, "UserTable", defaultUserData)
+    private fun insertUserDB(id: Int,name: String,account: String,password: String) {
+        //確認用戶是否已經存在
+        val existingUser = databaseManager.getUserById(id)
+        if (existingUser == null) {
+            val user = User(id, name, account,password)
+            databaseManager.addUser(user)
+            Log.d("新增用戶", "User added: $user")
+        } else {    //確認是否為已知id
+            Log.d("既有用戶", "User with ID $id already exists")
+        }
     }
 
     private fun createProductDB() {
