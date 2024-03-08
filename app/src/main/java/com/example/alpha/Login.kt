@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
@@ -18,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-@OptIn(DelicateCoroutinesApi::class)
 class Login : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
@@ -26,6 +27,7 @@ class Login : AppCompatActivity() {
 
     private lateinit var databaseManager: UserDBManager //(用封裝的方式獲取Dao)
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,6 @@ class Login : AppCompatActivity() {
         setContentView(binding.root)
 
         //整檔
-        createTransactionDB() //創建TransactionDB
         createProductDB()     //創建ProductDB
         createDiscountDB()    //創建DiscountDB
         createPairDiscountDB()//創建PairDiscountDB
@@ -54,18 +55,17 @@ class Login : AppCompatActivity() {
             val pas = binding.edtPas.text.toString()
 
             //用Dao查看是否為許可用戶
-            // 切換執行續進行查詢
-            GlobalScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val accessUser = databaseManager.loginByAccPas(acc,pas)
 
                 //有許可用戶
                 if (accessUser != null){
+                    //顯示登入成功訊息
+                    Log.d("登入成功", "用戶名稱: ${accessUser.name}")
+
                     //跳轉到登入頁面
                     val intent = Intent(this@Login,MainActivity::class.java)
                     startActivity(intent)
-
-                    //顯示登入成功訊息
-                    Log.d("登入成功", "用戶名稱: ${accessUser.name}")
                 }else{
                     Log.d("登入失敗: ", "無此用戶")
                 }
@@ -148,17 +148,6 @@ class Login : AppCompatActivity() {
             "INSERT INTO PairDiscountTable(d_pId, itemSet, number, total) VALUES(20,'1,2,3','1,2,3',60);"
         )
         createDatabase(dbHelper, "PairDiscountTable", defaultPairDiscountData)
-    }
-
-    //發票資訊的Table
-    private fun createTransactionDB() {
-//        val dbHelper = TransactionDBHelper(this)
-//        val defaultTransactionData = listOf(
-//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-10','0');",
-//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-11','0');",
-//            "INSERT INTO TransactionTable(tDate, tDescription) VALUES('2018-12-12','0');"
-//        )
-//        createDatabase(dbHelper, "TransactionTable", defaultTransactionData)
     }
 
     override fun onDestroy() {

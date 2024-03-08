@@ -10,10 +10,10 @@ interface InvoiceDao{
     fun addInvoice(invoice: Invoice): Long
 
     @Query("SELECT * FROM Invoices")
-    fun getAllInvoicesTable(): List<Invoice>
+    fun getAllInvoicesTable(): MutableList<Invoice>?
 
     @Query("SELECT * FROM Invoices WHERE id = :id")
-    fun getInvoiceByID(id: Long): List<Invoice>
+    fun getInvoiceByID(id: Long): Invoice?
 
     @Insert
     suspend fun insert(invoice: Invoice)

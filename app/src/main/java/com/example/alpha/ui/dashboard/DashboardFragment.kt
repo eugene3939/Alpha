@@ -1,16 +1,30 @@
 package com.example.alpha.ui.dashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.alpha.databinding.FragmentDashboardBinding
+import com.example.alpha.ui.dbhelper.invoiceDao.Invoice
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDBManager
+import com.example.alpha.ui.myAdapter.InvoiceAdapter
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var databaseManager: InvoiceDBManager //(用封裝的方式獲取Dao)
+
+    private var invoiceList: MutableList<Invoice>? = null //發票清單
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,11 +34,23 @@ class DashboardFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // 加載並顯示發票數據
-//        val invoiceList: MutableList<Invoice> = loadInvoices().toMutableList()
+        // 初始化資料庫管理器
+        databaseManager = InvoiceDBManager(requireContext())
 
-//        val adapter = InvoiceAdapter(invoiceList)
-//        binding.lsInvoice.adapter = adapter
+        lifecycleScope.launch(Dispatchers.IO){
+            invoiceList = databaseManager.getAllInvoicesTable()//更新發票清單
+
+            for (i in invoiceList!!){
+                Log.d("發票資料",i.paymentIds)
+            }
+
+            // 加載並顯示發票數據
+            val adapter = InvoiceAdapter(invoiceList)
+            // 在主執行緒上更新UI
+            withContext(Dispatchers.Main) {
+                binding.lsInvoice.adapter = adapter
+            }
+        }
 
         // 設置 ListView 點擊事件
 //        binding.lsInvoice.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->

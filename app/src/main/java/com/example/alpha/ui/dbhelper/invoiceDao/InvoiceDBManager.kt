@@ -20,15 +20,15 @@ class InvoiceDBManager(context: Context) {
     }
 
     //尋找是否存在發票單號
-    fun getInvoiceByID(id: Long){
-        runBlocking {
+    fun getInvoiceByID(id: Long): Invoice?{
+        return runBlocking {
             invoiceDao.getInvoiceByID(id)
         }
     }
 
     //搜尋所有發票
-    fun getAllInvoicesTable(){
-        runBlocking {
+    fun getAllInvoicesTable(): MutableList<Invoice>?{
+        return runBlocking {
             invoiceDao.getAllInvoicesTable()
         }
     }

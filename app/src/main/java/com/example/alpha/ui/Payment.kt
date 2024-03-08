@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.example.alpha.MainActivity
 import com.example.alpha.R
 import com.example.alpha.databinding.ActivityPaymentBinding
@@ -18,8 +19,8 @@ import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDBManager
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.PaymentMethod
 import com.example.alpha.ui.myObject.ShopCart
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,8 +38,6 @@ class Payment : AppCompatActivity() {
     private var countingState = true //能否繼續收現
 
     private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
-
-//    private lateinit var dbHelper: InvoiceDBHelper
 
     private lateinit var databaseManager: InvoiceDBManager //(用封裝的方式獲取Dao)
 
@@ -141,8 +140,8 @@ class Payment : AppCompatActivity() {
         //送出交易
         binding.btnSend.setOnClickListener {
             //確認格式正確後儲存到Invoice table
-            saveToInvoice(paymentList,shoppingCart,discountInfoList)
-//
+            saveToInvoice(paymentList,shoppingCart)
+
             //交易完成，回到首頁
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -165,19 +164,14 @@ class Payment : AppCompatActivity() {
     }
 
     //確認格式正確後儲存到Invoice table
-    private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?, discountInfoList: ArrayList<DiscountInfo>?) {
-        GlobalScope.launch(Dispatchers.IO) {
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?) {
+        lifecycleScope.launch(Dispatchers.IO) {
 
             databaseManager.addInvoice(Invoice( paymentIds = paymentListToString(paymentList),
                                                 itemList = shoppingCartToString(shoppingCart),
                                                 totalPrice = originTotalPrice-discount,
                                                 discount = discount))
-
-//            Log.d("格式檢查: ","123")
-//            Log.d("格式檢查: ",paymentListToString(paymentList))
-//            Log.d("格式檢查: ",shoppingCartToString(shoppingCart))
-//            Log.d("格式檢查: ","${originTotalPrice-discount}")
-//            Log.d("格式檢查: ","$discount")
         }
 
     }
