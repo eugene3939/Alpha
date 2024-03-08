@@ -2,6 +2,7 @@ package com.example.alpha.ui.dbhelper.invoiceDao
 
 import android.content.Context
 import androidx.room.Room
+import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDataBase.Companion.MIGRATION_2_3
 import kotlinx.coroutines.runBlocking
 import java.util.Date
 
@@ -20,6 +21,13 @@ class InvoiceDBManager(context: Context) {
         }
     }
 
+    //刪除發票
+    fun deleteById(id: Long){
+        runBlocking {
+            invoiceDao.deleteById(id)
+        }
+    }
+
     //尋找是否存在發票單號
     fun getInvoiceByID(id: Long): Invoice?{
         return runBlocking {
@@ -33,7 +41,6 @@ class InvoiceDBManager(context: Context) {
             invoiceDao.updateUserLoginTime(id,purchaseTime)
         }
     }
-
 
     //搜尋所有發票
     fun getAllInvoicesTable(): MutableList<Invoice>?{

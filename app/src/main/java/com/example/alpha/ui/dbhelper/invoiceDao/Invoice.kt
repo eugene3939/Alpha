@@ -6,6 +6,7 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.Date
 
 @TypeConverters(Converters::class)
 
@@ -17,7 +18,7 @@ data class Invoice(
     val itemList: String,
     val totalPrice: Int,
     val discount: Int,
-    val purchaseTime: Int? = null
+    val purchaseTime: Date
 )
 
 object Converters {

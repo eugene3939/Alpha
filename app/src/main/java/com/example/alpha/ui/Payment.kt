@@ -166,14 +166,12 @@ class Payment : AppCompatActivity() {
     private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?) {
         lifecycleScope.launch(Dispatchers.IO) {
 
-            // 取得當前 UNIX 時間戳記
-            val currentTimeStamp = getCurrentUnixTimestamp()
 
             databaseManager.addInvoice(Invoice( paymentIds = paymentListToString(paymentList),
                                                 itemList = shoppingCartToString(shoppingCart),
                                                 totalPrice = originTotalPrice-discount,
                                                 discount = discount,
-                                                purchaseTime = currentTimeStamp))
+                                                purchaseTime = Date()))
         }
 
     }
@@ -282,10 +280,5 @@ class Payment : AppCompatActivity() {
         }
 
         return productListString
-    }
-
-    // 將日期轉換為 UNIX 時間戳記並存儲為 Integer
-    private fun getCurrentUnixTimestamp(): Int {
-        return (System.currentTimeMillis() / 1000).toInt()
     }
 }

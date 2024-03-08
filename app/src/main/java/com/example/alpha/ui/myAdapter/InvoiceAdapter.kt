@@ -8,6 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.alpha.R
 import com.example.alpha.ui.dbhelper.invoiceDao.Invoice
+import java.util.Date
 
 class InvoiceAdapter(private val dataList: MutableList<Invoice>?) : BaseAdapter() {
     override fun getCount(): Int {
@@ -15,7 +16,7 @@ class InvoiceAdapter(private val dataList: MutableList<Invoice>?) : BaseAdapter(
     }
 
     override fun getItem(position: Int): Any {
-        return dataList?.get(position) ?: Invoice(0, "No items", "No payment", 0, 0)
+        return dataList?.get(position) ?: Invoice(0, "No items", "No payment", 0, 0, Date())
     }
 
     override fun getItemId(position: Int): Long {

@@ -79,6 +79,7 @@ class DownloadWaiting : AppCompatActivity() {
             //val externalFilesDir = requireContext().filesDir //儲存內部私有空間
             externalFilesDir?.let { externalDir ->
                 // 2. 創建 DevicePOS 資料夾在外部存儲目錄中
+                //儲存目錄(/storage/emulated/0/Android/data/com.example.alpha/files/devicePOS)
                 val devicePOSDirectory = File(externalDir, "devicePOS")
                 if (!devicePOSDirectory.exists()) {
                     devicePOSDirectory.mkdirs() // 如果目錄不存在，則創建它

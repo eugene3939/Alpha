@@ -23,6 +23,6 @@ interface InvoiceDao{
     @Insert
     suspend fun insert(invoice: Invoice)
 
-    @Delete
-    suspend fun delete(invoice: Invoice)
+    @Query("DELETE FROM invoices WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }
