@@ -3,6 +3,7 @@ package com.example.alpha.ui.dbhelper.invoiceDao
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.runBlocking
+import java.util.Date
 
 class InvoiceDBManager(context: Context) {
     private val db: InvoiceDataBase = Room.databaseBuilder(
@@ -25,6 +26,14 @@ class InvoiceDBManager(context: Context) {
             invoiceDao.getInvoiceByID(id)
         }
     }
+
+    //更新為預設發票日期
+    fun updateUserLoginTime(id: Long, purchaseTime: Date){
+        runBlocking {
+            invoiceDao.updateUserLoginTime(id,purchaseTime)
+        }
+    }
+
 
     //搜尋所有發票
     fun getAllInvoicesTable(): MutableList<Invoice>?{

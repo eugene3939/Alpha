@@ -1,5 +1,6 @@
 package com.example.alpha.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Date
 
 class DashboardFragment : Fragment() {
 
@@ -40,8 +47,10 @@ class DashboardFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO){
             invoiceList = databaseManager.getAllInvoicesTable()//更新發票清單
 
-            for (i in invoiceList!!){
-                Log.d("發票資料",i.paymentIds)
+            // 將 UNIX 時間戳記轉換為 LocalDateTime 並記錄日誌
+            for (invoice in invoiceList!!) {
+                val localDateTime = convertUnixTimestampToLocalDateTime(invoice.purchaseTime)
+                Log.d("發票資料", localDateTime.toString())
             }
 
             // 加載並顯示發票數據
@@ -86,10 +95,12 @@ class DashboardFragment : Fragment() {
         return root
     }
 
-//    private fun loadInvoices(): List<Invoice> {
-//        val invoiceRepository = InvoiceDBManager(requireContext())
-//        return invoiceRepository.getAllInvoices()
-//    }
+    // 將 UNIX 時間戳記轉換為 LocalDateTime
+    fun convertUnixTimestampToLocalDateTime(timestamp: Int?): ZonedDateTime? {
+        return timestamp?.let {
+            ZonedDateTime.ofInstant(Instant.ofEpochSecond(it.toLong()), ZoneId.of("Asia/Taipei"))
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

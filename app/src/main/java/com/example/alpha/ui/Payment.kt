@@ -19,7 +19,6 @@ import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDBManager
 import com.example.alpha.ui.myObject.DiscountInfo
 import com.example.alpha.ui.myObject.PaymentMethod
 import com.example.alpha.ui.myObject.ShopCart
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -39,7 +38,7 @@ class Payment : AppCompatActivity() {
 
     private val paymentList = mutableListOf<PaymentMethod>() //紀錄支付方式
 
-    private lateinit var databaseManager: InvoiceDBManager //(用封裝的方式獲取Dao)
+    private lateinit var databaseManager: InvoiceDBManager //用封裝的方式獲取Dao
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +105,7 @@ class Payment : AppCompatActivity() {
             if(countingState){  //信用卡只要新增成功就不允許修改
                 val enterText = binding.edtCash.text.toString()
 
-                var otherPayment = paymentList.sumOf { it.paymentAmount } - (paymentList.find { it.paymentType == "信用卡" }?.paymentAmount ?: 0)
+                val otherPayment = paymentList.sumOf { it.paymentAmount } - (paymentList.find { it.paymentType == "信用卡" }?.paymentAmount ?: 0)
 
                 if (enterText == ""){   //沒有輸入，自動填入全部金額
                     val fullPayment = originTotalPrice - discount
@@ -164,14 +163,17 @@ class Payment : AppCompatActivity() {
     }
 
     //確認格式正確後儲存到Invoice table
-    @OptIn(DelicateCoroutinesApi::class)
     private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?) {
         lifecycleScope.launch(Dispatchers.IO) {
+
+            // 取得當前 UNIX 時間戳記
+            val currentTimeStamp = getCurrentUnixTimestamp()
 
             databaseManager.addInvoice(Invoice( paymentIds = paymentListToString(paymentList),
                                                 itemList = shoppingCartToString(shoppingCart),
                                                 totalPrice = originTotalPrice-discount,
-                                                discount = discount))
+                                                discount = discount,
+                                                purchaseTime = currentTimeStamp))
         }
 
     }
@@ -244,8 +246,6 @@ class Payment : AppCompatActivity() {
     //取得折扣額和總價
     @SuppressLint("SetTextI18n")
     private fun getDiscountAndTotalPrice(shoppingCart: ShopCart?, discountInfoList: ArrayList<DiscountInfo>?) {
-        //找零金額
-        var change = 0
         //取得購物車總價
         if (shoppingCart != null) {
             for (i in shoppingCart.selectedProducts){
@@ -284,10 +284,8 @@ class Payment : AppCompatActivity() {
         return productListString
     }
 
-    // 獲取當前日期時間的函數
-    @SuppressLint("SimpleDateFormat")
-    private fun getCurrentDateTime(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(Date())
+    // 將日期轉換為 UNIX 時間戳記並存儲為 Integer
+    private fun getCurrentUnixTimestamp(): Int {
+        return (System.currentTimeMillis() / 1000).toInt()
     }
 }
