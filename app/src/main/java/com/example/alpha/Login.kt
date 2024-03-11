@@ -11,6 +11,8 @@ import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
+import com.example.alpha.ui.dbhelper.productDao.ClusterMerchandise
+import com.example.alpha.ui.dbhelper.productDao.DiscountMerchandise
 import com.example.alpha.ui.dbhelper.productDao.Merchandise
 import com.example.alpha.ui.dbhelper.productDao.MerchandiseDBManager
 import com.example.alpha.ui.dbhelper.userDao.User
@@ -54,10 +56,12 @@ class Login : AppCompatActivity() {
         insertMerchandisesDB(19,"綠茶", "飲料","CCC", 80, 25, 0)
         insertMerchandisesDB(20,"Apple set", "組合商品","RTX", 300, 200, 0)
 
-//        insertDiscountProductDB(1,"蘋果9折", 0.1 , 0)
-//        insertDiscountProductDB(2,"單品折30", 0.0, 30)
-//        insertDiscountProductDB(3,"單品折10", 0.0, 10)
-//        insertDiscountProductDB(20,"組合商品折60", 0.0, 60)
+        insertDiscountProductDB(1,"蘋果9折", 0.1 , 0)  //折扣商品清單
+        insertDiscountProductDB(2,"單品折30", 0.0, 30)
+        insertDiscountProductDB(3,"單品折10", 0.0, 10)
+        insertDiscountProductDB(20,"組合商品折60", 0.0, 60)
+
+        insertPairProduct(20,"1,2,3","1,2,3",60)    //綑綁商品清單
 
 
         // 登入按鈕
@@ -129,7 +133,7 @@ class Login : AppCompatActivity() {
         }
     }
 
-    //新增到Merchandises Table
+    //一般商品資料庫
     private fun insertMerchandisesDB(id: Int, name: String, type: String, barcode: String, price: Int, number: Int, image: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
             //確認用戶是否已經存在
@@ -140,6 +144,36 @@ class Login : AppCompatActivity() {
                 Log.d("新增商品", "Merchandise added: $item")
             } else {    //確認是否為已知id
                 Log.d("既有商品", "Merchandise with pID $id already exists")
+            }
+        }
+    }
+
+    //折扣商品資料庫
+    private fun insertDiscountProductDB(pId: Int, description: String, percentage: Double, chargeback: Int) {
+        lifecycleScope.launch(Dispatchers.IO){
+            //確認折扣商品是否已經存在
+            val existingDProduct = merchandiseDBManager.getDiscountByID(pId)
+            if (existingDProduct == null) {
+                val item = DiscountMerchandise(pId = pId, pDescription = description, pDiscount = percentage, pChargebacks = chargeback, selectedQuantity = 0)
+                merchandiseDBManager.insertDiscount(item)
+                Log.d("新增折扣商品", "DProduct added: $item")
+            } else {    //確認是否為已知id
+                Log.d("既有折扣商品", "DProduct with ID $pId already exists")
+            }
+        }
+    }
+
+    //組合商品清單
+    private fun insertPairProduct(pId: Int,itemSet : String, number: String, total: Int) {
+        lifecycleScope.launch(Dispatchers.IO){
+            //確認組合商品是否已經存在
+            val existingCProduct = merchandiseDBManager.getClusterByID(pId)
+            if (existingCProduct == null) {
+                val item = ClusterMerchandise(pId = pId, itemSet = itemSet, number = number, total = total)
+                merchandiseDBManager.insertCluster(item)
+                Log.d("新增組合商品", "CProduct added: $item")
+            } else {    //確認是否為已知id
+                Log.d("既有組合商品", "CProduct with ID $pId already exists")
             }
         }
     }
