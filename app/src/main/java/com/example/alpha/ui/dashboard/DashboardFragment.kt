@@ -1,9 +1,7 @@
 package com.example.alpha.ui.dashboard
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,17 +12,10 @@ import com.example.alpha.databinding.FragmentDashboardBinding
 import com.example.alpha.ui.dbhelper.invoiceDao.Invoice
 import com.example.alpha.ui.dbhelper.invoiceDao.InvoiceDBManager
 import com.example.alpha.ui.myAdapter.InvoiceAdapter
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 

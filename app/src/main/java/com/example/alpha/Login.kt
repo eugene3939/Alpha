@@ -1,23 +1,21 @@
 package com.example.alpha
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.alpha.databinding.ActivityLoginBinding
 import com.example.alpha.ui.dbhelper.DiscountDBHelper
 import com.example.alpha.ui.dbhelper.PairDiscountDBHelper
 import com.example.alpha.ui.dbhelper.ProductDBHelper
+import com.example.alpha.ui.dbhelper.productDao.Merchandise
+import com.example.alpha.ui.dbhelper.productDao.MerchandiseDBManager
 import com.example.alpha.ui.dbhelper.userDao.User
 import com.example.alpha.ui.dbhelper.userDao.UserDBManager
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class Login : AppCompatActivity() {
@@ -25,28 +23,42 @@ class Login : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var dbrw: SQLiteDatabase
 
-    private lateinit var databaseManager: UserDBManager //(用封裝的方式獲取Dao)
+    private lateinit var userDBManager: UserDBManager //(用封裝的方式獲取Dao)
+    private lateinit var merchandiseDBManager: MerchandiseDBManager
 
-    @OptIn(DelicateCoroutinesApi::class)
-    @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        // 初始化資料庫管理器
-        databaseManager = UserDBManager(applicationContext)
 
         // 使用 View Binding 初始化綁定
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 初始化資料庫管理器
+        userDBManager = UserDBManager(applicationContext)
+        merchandiseDBManager = MerchandiseDBManager(applicationContext)
+
         //整檔
-        createProductDB()     //創建ProductDB
-        createDiscountDB()    //創建DiscountDB
-        createPairDiscountDB()//創建PairDiscountDB
+        //createProductDB()     //創建ProductDB
+        //createDiscountDB()    //創建DiscountDB
+        //createPairDiscountDB()//創建PairDiscountDB
 
         insertUserDB(1,"Eugene", "1", "1")        //建立預設用戶
         insertUserDB(2,"Oscar", "3", "3")
+
+        insertMerchandisesDB(1,"Apple", "水果","SBC", 50, 100, 0)        //建立商品資料
+        insertMerchandisesDB(2,"Pineapple", "水果","123", 100, 80, 0)
+        insertMerchandisesDB(3,"Snapple", "其他","A12", 200, 60, 0)
+        insertMerchandisesDB(17,"可可亞", "食物","ABC", 500, 80, 0)
+        insertMerchandisesDB(18,"西瓜", "飲料","RCT", 230, 60, 0)
+        insertMerchandisesDB(19,"綠茶", "飲料","CCC", 80, 25, 0)
+        insertMerchandisesDB(20,"Apple set", "組合商品","RTX", 300, 200, 0)
+
+//        insertDiscountProductDB(1,"蘋果9折", 0.1 , 0)
+//        insertDiscountProductDB(2,"單品折30", 0.0, 30)
+//        insertDiscountProductDB(3,"單品折10", 0.0, 10)
+//        insertDiscountProductDB(20,"組合商品折60", 0.0, 60)
+
 
         // 登入按鈕
         binding.btnLogin.setOnClickListener {
@@ -56,7 +68,7 @@ class Login : AppCompatActivity() {
 
             //用Dao查看是否為許可用戶
             lifecycleScope.launch(Dispatchers.IO) {
-                val accessUser = databaseManager.loginByAccPas(acc,pas)
+                val accessUser = userDBManager.loginByAccPas(acc,pas)
 
                 //有許可用戶
                 if (accessUser != null){
@@ -102,15 +114,33 @@ class Login : AppCompatActivity() {
         countCursor.close()
     }
 
+    //新增user dao Table
     private fun insertUserDB(id: Int,name: String,account: String,password: String) {
-        //確認用戶是否已經存在
-        val existingUser = databaseManager.getUserById(id)
-        if (existingUser == null) {
-            val user = User(id, name, account,password)
-            databaseManager.addUser(user)
-            Log.d("新增用戶", "User added: $user")
-        } else {    //確認是否為已知id
-            Log.d("既有用戶", "User with ID $id already exists")
+        lifecycleScope.launch(Dispatchers.IO){
+            //確認用戶是否已經存在
+            val existingUser = userDBManager.getUserById(id)
+            if (existingUser == null) {
+                val user = User(id, name, account,password)
+                userDBManager.addUser(user)
+                Log.d("新增用戶", "User added: $user")
+            } else {    //確認是否為已知id
+                Log.d("既有用戶", "User with ID $id already exists")
+            }
+        }
+    }
+
+    //新增到Merchandises Table
+    private fun insertMerchandisesDB(id: Int, name: String, type: String, barcode: String, price: Int, number: Int, image: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            //確認用戶是否已經存在
+            val existingMerchandise = merchandiseDBManager.getMerchandiseByID(id)
+            if (existingMerchandise == null) {
+                val item = Merchandise(pId = id, imageUrl = image, pName = name, pType = type, pBarcode = barcode, pNumber = number, pPrice = price, selectedQuantity = 0)
+                merchandiseDBManager.insert(item)
+                Log.d("新增商品", "Merchandise added: $item")
+            } else {    //確認是否為已知id
+                Log.d("既有商品", "Merchandise with pID $id already exists")
+            }
         }
     }
 
