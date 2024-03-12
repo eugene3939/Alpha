@@ -110,7 +110,7 @@ class Payment : AppCompatActivity() {
                 if (enterText == ""){   //沒有輸入，自動填入全部金額
                     val fullPayment = originTotalPrice - discount
 
-                    updatePaymentAmount(paymentList,"信用卡",fullPayment - otherPayment)  //新增全部金額
+                    updatePaymentAmount(paymentList,"信用卡",fullPayment - otherPayment)         //新增全部金額
                     countingState = false
                 }else if(enterText.toInt()>=0 && enterText.toInt()<= originTotalPrice - discount - otherPayment){   //不允許溢收
                     updatePaymentAmount(paymentList,"信用卡",enterText.toInt())  //新增輸入金額
@@ -166,7 +166,7 @@ class Payment : AppCompatActivity() {
     private fun saveToInvoice(paymentList: MutableList<PaymentMethod>, shoppingCart: ShopCart?) {
         lifecycleScope.launch(Dispatchers.IO) {
 
-
+            //在table內新增發票
             databaseManager.addInvoice(Invoice( paymentIds = paymentListToString(paymentList),
                                                 itemList = shoppingCartToString(shoppingCart),
                                                 totalPrice = originTotalPrice-discount,

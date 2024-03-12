@@ -2,7 +2,7 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
+      <entry key="alpha">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -10,23 +10,12 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\2301081\.android\avd\sta.avd" />
+                  <value value="C:\Users\2301081\.android\avd\Copy_of_Alpha3.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\2301081\.android\avd\sta.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-11T08:00:13.002572Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-03-12T08:47:41.836528300Z" />
         </State>
       </entry>
     </value>
